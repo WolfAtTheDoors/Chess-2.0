@@ -5,6 +5,7 @@
  * Issues:
  * - check and checkmate states
  * - draw states
+ * - test
  */
 
 import java.util.ArrayList;
