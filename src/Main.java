@@ -1,4 +1,4 @@
-/**
+package src; /**
  * Chess 2.0
  * author: Gisela Wolf
  * date 19.01.2023
@@ -168,11 +168,11 @@ class Player extends Chessboard {
             switch (piece) {
                 case "WP":
                     //moves up the board by one
-                    if(!(moveCoordinates[0] == 0 && moveCoordinates[1] == 1
+                 /*   if(!(moveCoordinates[0] == 0 && moveCoordinates[1] == 1
                             ||(moveCoordinates[0] == 0 && moveCoordinates[1] == 2)
                             ||
                             ||
-                    ))
+                    ))*/
                 {
                     moveIsLegal = false;
                 }
