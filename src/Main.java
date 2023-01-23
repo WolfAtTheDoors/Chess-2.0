@@ -168,7 +168,7 @@ class Player extends Chessboard {
             switch (piece) {
                 case "WP":
                     //moves up the board by one
-                 /*   if(!(moveCoordinates[0] == 0 && moveCoordinates[1] == 1
+              /*      if(!(moveCoordinates[0] == 0 && moveCoordinates[1] == 1)
                             ||(moveCoordinates[0] == 0 && moveCoordinates[1] == 2)
                             ||
                             ||
