@@ -3,10 +3,8 @@
  * author: Gisela Wolf
  * date 19.01.2023
  * Issues:
- * - check and checkmate states
- * - remis states
+ * - Statebased actions (check, checkmate, remis and caste legality)
  */
-package src;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -60,8 +58,7 @@ class Chessboard {
             blackKingFound = false;
             whiteKingFound = false;
         }
-        //Is the King checked? Is he in checkmate?
-
+        //Is the king checked? Is he in checkmate?
 
     //Remis
         //Are there no legal moves left?
@@ -86,7 +83,7 @@ class Chessboard {
 
 class Player extends Chessboard {
     ArrayList<String> piecesTaken = new ArrayList<String>();
-    String origin;
+    String originString;
 
     //constructor
     public void player() {
@@ -114,7 +111,7 @@ class Player extends Chessboard {
             move = in.nextLine();
 
             //Determine the move's origin and goal
-            origin = "" + move.charAt(0) + move.charAt(1);
+            originString = "" + move.charAt(0) + move.charAt(1);
             destinationString = "" + move.charAt(2) + move.charAt(3);
 
             //convert origin and destination to board coordinates.
@@ -147,67 +144,106 @@ class Player extends Chessboard {
             }
             destinationChar = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0);
 
-            //compare the move to the rules
-            //piece is a piece
-            if (!isPiece) {
-                System.out.println("there is no one here.");
-                moveIsLegal = false;
-            }
-            //piece is correct colour
-            if (isPiece && (!((Chessboard.isWhiteTurn && isWhite) || (!isWhiteTurn && isBlack)))) {
-                System.out.println("That life is not yours to spend.");
-                moveIsLegal = false;
-            }
-            //destination contains own piece
-            if ((destinationChar == 'W' && Chessboard.isWhiteTurn) || (destinationChar == 'B' && !Chessboard.isWhiteTurn)) {
-                System.out.println("That space is taken.");
-                moveIsLegal = false;
-            }
-
-            //move endangers King
-            //move ignores checked King (enemy and own)
-
             //piece rules:
             //piece moveset disallows
             //move crosses other piece (except for knight)
 
             //case: castle move
-
             switch (piece) {
                 case "WP":
-                    //moves up the board by one
-              /*      if(!(moveCoordinates[0] == 0 && moveCoordinates[1] == 1)
-                            ||(moveCoordinates[0] == 0 && moveCoordinates[1] == 2)
-                            ||
-                            ||
-                    ))*/
-                {
                     moveIsLegal = false;
-                }
-                //Moves up the board by one or two on first move
-                //captures diagonally
-                //captures en-passant
-
-                break;
+                    //Moves up the board by one or two on first move
+                    if(moveCoordinates[0] == 2 && moveCoordinates[1] == 0){
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if(moveCoordinates[0] == -2 && moveCoordinates[1] == 0){
+                        moveIsLegal = true;
+                        break;
+                    }
+                    //captures diagonally
+                    //captures en-passant
+                    break;
                 case "WR":
+                    moveIsLegal = false;
                     //moves in a straight line, up or down
+                    if(moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if(moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
+                        moveIsLegal = true;
+                        break;
+                    }
                     //cannot skip
                     //can castle long or short
 
-                    break;
                 case "WN":
+                    moveIsLegal = false;
                     //Moves by 2/1
-                    //can skip other pieces and move on turn 1
-                    break;
+                    if(moveCoordinates[0] == 1 && moveCoordinates[1] == 2) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if(moveCoordinates[0] == 2 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if(moveCoordinates[0] == -1 && moveCoordinates[1] == -2) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if(moveCoordinates[0] == -2 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if(moveCoordinates[0] == 1 && moveCoordinates[1] == -2) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if(moveCoordinates[0] == 2 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if(moveCoordinates[0] == -1 && moveCoordinates[1] == 2) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if(moveCoordinates[0] == -2 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+
+                    //can skip other pieces (and thus move on turn 1)
                 case "WB":
+                    moveIsLegal = false;
                     //moves diagonally
+                    if((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0 )) {
+                        moveIsLegal = true;
+                        break;
+                    }
+
                     //cannot skip other pieces
                     break;
                 case "WQ":
+                    moveIsLegal = false;
                     //moves in all directions
                     //cannot skip?
                     break;
                 case "WK":
+                    moveIsLegal = false;
                     //moves by one in any direction
                     //has to be protected
                     break;
@@ -231,35 +267,57 @@ class Player extends Chessboard {
                     break;
             }
 
+            //compare the move to the general rules
+            //piece is a piece
+            if (!isPiece) {
+                System.out.println("there is no one here.");
+                moveIsLegal = false;
+            }
+            //piece is correct colour
+            if (isPiece && (!((Chessboard.isWhiteTurn && isWhite) || (!isWhiteTurn && isBlack)))) {
+                System.out.println("That life is not yours to spend.");
+                moveIsLegal = false;
+            }
+            //destination contains own piece
+            if ((destinationChar == 'W' && Chessboard.isWhiteTurn) || (destinationChar == 'B' && !Chessboard.isWhiteTurn)) {
+                System.out.println("That space is taken.");
+                moveIsLegal = false;
+            }
+
+            //move endangers King
+            //move ignores checked King (enemy and own)
+
             System.out.println("------------------------ "
-                    + "\r\n" + moveCoordinates[0]
-                    + "\r\n" + moveCoordinates[1]
-                    + "\r\n" + "move is legal: " + moveIsLegal
+                    + "\r\n" + "Move coordinates: " + moveCoordinates[0] + moveCoordinates[1]
+                    + "\r\n" + "move is legal: "    + moveIsLegal
+                    + "\r\n" + "the piece you chose "    + piece
                     + "\r\n" + "its white's turn: " + isWhiteTurn
                     + "\r\n" + "------------------------"
             );
 
             if (!moveIsLegal) {
                 System.out.println("I can't let you do that.");
-                moveIsLegal = true;
             } else {
+                //move is legal:
+                //delete piece from destination (=00)
+                //insert piece into destination (=BP)
+                //case: there was a enemy piece there = piece gets taken
+                //case: pawn lands on last row = promotion
+
                 System.out.println("next up!");
                 break;
             }
 
-            //If move is legal:
-            //delete piece from destination (=00)
-            //insert piece into destination (=BP)
-            //case: there was a enemy piece there = piece gets taken
-            //case: pawn lands on last row = promotion
 
         }
     }
 
     //choices
     public void concede(){}
-    public void offerDraw(){}
-    public void announceCheck(){}
+    public void offerRemis(){}
+    public void castle(){}
+    public void resetTheBoard(){}
+
 
 }
 
@@ -282,13 +340,14 @@ public class Main {
             Chessboard.turnCounter ++;
             //Display options for player black or white?
             if (Chessboard.isWhiteTurn) {
-                System.out.println("Player White, choose wisely:" + "Move" + "Castle" + "Offer Remis" + "Concede" + "Reset the board");
+                System.out.println("Player White, choose wisely: " + "Move " + "Castle " + "Offer Remis " + "Concede " + "Reset the board ");
             } else {
-                System.out.println("Player Black, choose wisely:" + "Move" + "Castle" + "Offer Remis" + "Concede" + "Reset the board");
+                System.out.println("Player Black, choose wisely: " + "Move " + "Castle " + "Offer Remis " + "Concede " + "Reset the board ");
             }
 
             //Checks gamestates
             Chessboard.checkState();
+
 
             //+++++PLAYER MOVE++++++
             if (Chessboard.isWhiteTurn) {
@@ -297,6 +356,7 @@ public class Main {
                 playerBlack.move();
             }
             //*****PLAYER MOVE******
+
 
             //display the new board and pieces taken
             chessboard.displayBoard();
