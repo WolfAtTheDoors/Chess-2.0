@@ -1,13 +1,12 @@
-package src; /**
+/**
  * Chess 2.0
  * author: Gisela Wolf
  * date 19.01.2023
  * Issues:
  * - check and checkmate states
- * - draw states
- * - test
+ * - remis states
  */
-
+package src;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -16,7 +15,7 @@ class Chessboard {
     public static boolean isWhiteTurn;
     public static boolean blackKingLives = true;
     public static boolean whiteKingLives = true;
-
+    public static int turnCounter;
     final static String[][] chessBoardOrigin = {
             {"-", " a", " b", " c", " d", " e", " f", " g", " h"},
             {"8", "BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR"},
@@ -33,11 +32,12 @@ class Chessboard {
     //constructor
     public void chessboard(){}
 
-    //Gamestate checks
-    public void checkState(){
+//Gamestate checks
+    public static void checkState(){
         boolean blackKingFound = false;
         boolean whiteKingFound = false;
 
+    //Check and Checkmate
         //Is the King alive?
         for(int i = 0; i < 9; i++){
             for(int j = 0; j < 9; j++){
@@ -49,7 +49,6 @@ class Chessboard {
                 }
             }
         }
-
         if(!blackKingFound){
             blackKingLives = false;
             System.out.println(" And the Winner is: WHITE" );
@@ -61,13 +60,22 @@ class Chessboard {
             blackKingFound = false;
             whiteKingFound = false;
         }
-
-        //Are only two pieces left alive?
         //Is the King checked? Is he in checkmate?
+
+
+    //Remis
+        //Are there no legal moves left?
+        //Has a check become impossible? King and King, King and King-Knight, king and King-Bishop)
+        //Have the players agreed to draw?
+
+    //Promition
         //Is there a pawn on the last row of the other colour? Queening or underpromotion
+
+    //Castling
+        //Is castling a legal move? King and rook not moved and free space between them?
     }
 
-    //Display
+//Display
     public void displayBoard(){
         for (int i = 0; i < 9; i++) {
             System.out.println(Arrays.deepToString(chessBoardNew[i]));
@@ -270,23 +278,30 @@ public class Main {
         while (Chessboard.blackKingLives && Chessboard.whiteKingLives) {
             //change player turn (white true, black false)
             Chessboard.isWhiteTurn = !Chessboard.isWhiteTurn;
+            //Counts the turns
+            Chessboard.turnCounter ++;
+            //Display options for player black or white?
+            if (Chessboard.isWhiteTurn) {
+                System.out.println("Player White, choose wisely:" + "Move" + "Castle" + "Offer Remis" + "Concede" + "Reset the board");
+            } else {
+                System.out.println("Player Black, choose wisely:" + "Move" + "Castle" + "Offer Remis" + "Concede" + "Reset the board");
+            }
 
-            //Display options for player black or white
+            //Checks gamestates
+            Chessboard.checkState();
 
-            //player move
+            //+++++PLAYER MOVE++++++
             if (Chessboard.isWhiteTurn) {
                 playerWhite.move();
             } else {
                 playerBlack.move();
             }
+            //*****PLAYER MOVE******
 
             //display the new board and pieces taken
             chessboard.displayBoard();
             System.out.println("Player Black: " + playerBlack.piecesTaken);
             System.out.println("Player White: " + playerWhite.piecesTaken);
-
-            //check the board for state based action
-            chessboard.checkState();
 
         }
     }
