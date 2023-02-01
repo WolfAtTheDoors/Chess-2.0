@@ -150,121 +150,184 @@ class Player extends Chessboard {
 
             //case: castle move
             switch (piece) {
-                case "WP":
+                case "WP" -> {
                     moveIsLegal = false;
                     //Moves up the board by one or two on first move
-                    if(moveCoordinates[0] == 2 && moveCoordinates[1] == 0){
+                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
                         break;
                     }
-                    if(moveCoordinates[0] == -2 && moveCoordinates[1] == 0){
+                    if ((turnCounter == 1) && (moveCoordinates[0] == -2 && moveCoordinates[1] == 0)) {
                         moveIsLegal = true;
                         break;
                     }
-                    //captures diagonally
-                    //captures en-passant
-                    break;
-                case "WR":
+                }
+                //captures diagonally
+                //captures en-passant
+                case "WR", "BR" -> {
                     moveIsLegal = false;
-                    //moves in a straight line, up or down
-                    if(moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
+                    //moves in a straight line, vertical and horizontal
+                    if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
                         break;
                     }
-                    if(moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
+                    if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                }
+                //cannot skip
+                //can castle long or short
+                case "BN", "WN" -> {
+                    moveIsLegal = false;
+                    //Moves by 2/1
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == 2) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 2 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == -2) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -2 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == -2) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 2 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == 2) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -2 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                }
+                //can skip other pieces (and thus move on turn 1)
+                case "BB", "WB" -> {
+                    moveIsLegal = false;
+                    //moves diagonally
+                    if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    //cannot skip other pieces
+                }
+
+                case "BQ", "WQ" -> {
+                    moveIsLegal = false;
+                    //moves diagonally
+                    if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    //moves in a straight line, vertical and horizontal
+                    if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
                         moveIsLegal = true;
                         break;
                     }
                     //cannot skip
-                    //can castle long or short
+                }
 
-                case "WN":
-                    moveIsLegal = false;
-                    //Moves by 2/1
-                    if(moveCoordinates[0] == 1 && moveCoordinates[1] == 2) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if(moveCoordinates[0] == 2 && moveCoordinates[1] == 1) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if(moveCoordinates[0] == -1 && moveCoordinates[1] == -2) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if(moveCoordinates[0] == -2 && moveCoordinates[1] == -1) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if(moveCoordinates[0] == 1 && moveCoordinates[1] == -2) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if(moveCoordinates[0] == 2 && moveCoordinates[1] == -1) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if(moveCoordinates[0] == -1 && moveCoordinates[1] == 2) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if(moveCoordinates[0] == -2 && moveCoordinates[1] == 1) {
-                        moveIsLegal = true;
-                        break;
-                    }
-
-                    //can skip other pieces (and thus move on turn 1)
-                case "WB":
-                    moveIsLegal = false;
-                    //moves diagonally
-                    if((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0 )) {
-                        moveIsLegal = true;
-                        break;
-                    }
-
-                    //cannot skip other pieces
-                    break;
-                case "WQ":
-                    moveIsLegal = false;
-                    //moves in all directions
-                    //cannot skip?
-                    break;
-                case "WK":
+                case "BK", "WK" -> {
                     moveIsLegal = false;
                     //moves by one in any direction
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == 0) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 0 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == 0) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 0 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        break;
+                    }
+
                     //has to be protected
-                    break;
-                case "BP":
+
+                }
+
+
+                case "BP" -> {
+                    moveIsLegal = false;
                     //moves down the board by one
                     //Moves down the board by one or two on first move
-                    //captures diagonally
-                    //captures en-passant
-                    break;
-                case "BR":
-                    break;
-                case "BN":
-                    break;
-                case "BB":
-                    break;
-                case "BQ":
-                    break;
-                case "BK":
-                    break;
-                default:
-                    break;
+                    //Moves up the board by one or two on first move
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == 0) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if ((turnCounter == 1) && (moveCoordinates[0] == 2 && moveCoordinates[1] == 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+
+                //captures diagonally
+                //captures en-passant
+                    }
+                default -> {
+                }
             }
 
             //compare the move to the general rules
