@@ -82,7 +82,9 @@ class Chessboard {
 }
 
 class Player extends Chessboard {
-    ArrayList<String> piecesTaken = new ArrayList<String>();
+    ArrayList<String> blackPiecesTaken = new ArrayList<String>();
+    ArrayList<String> whitePiecesTaken = new ArrayList<String>();
+
     String originString;
 
     //constructor
@@ -101,8 +103,11 @@ class Player extends Chessboard {
         boolean isWhite = false;
         boolean isBlack = false;
         String piece = "AA";
+        String pieceTaken = "AA";
         char destinationChar = 'A';
         String destinationString ="AA";
+        boolean kingHasMoved = false;
+        boolean rookHasMoved = false;
 
         while(true) {
             //enter the move in standard format "c2c4"
@@ -134,6 +139,8 @@ class Player extends Chessboard {
 
             //parse if there is a piece and what color
             piece = Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]];
+            pieceTaken = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]];
+
             if (!Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]].equals("00")) {
                 isPiece = true;
                 if (piece.charAt(0) == 'B') {
@@ -144,11 +151,14 @@ class Player extends Chessboard {
             }
             destinationChar = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0);
 
-            //piece rules:
-            //piece moveset disallows
+            //piece rules still to implement:
             //move crosses other piece (except for knight)
+            //Pawn capturing moves
+            //endangering/risking the king
+            //moves in check
+            //castling
+            //promotion
 
-            //case: castle move
             switch (piece) {
                 case "WP" -> {
                     moveIsLegal = false;
@@ -161,23 +171,45 @@ class Player extends Chessboard {
                         moveIsLegal = true;
                         break;
                     }
+                    //captures diagonally
+                    //captures en-passant
                 }
-                //captures diagonally
-                //captures en-passant
+
+                case "BP" -> {
+                    moveIsLegal = false;
+                    //moves down the board by one
+                    //Moves down the board by one or two on first move
+                    //Moves up the board by one or two on first move
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == 0) {
+                        moveIsLegal = true;
+                        break;
+                    }
+                    if ((turnCounter == 2) && (moveCoordinates[0] == 2 && moveCoordinates[1] == 0)) {
+                        moveIsLegal = true;
+                        break;
+                    }
+
+                    //captures diagonally
+                    //captures en-passant
+                }
+
                 case "WR", "BR" -> {
                     moveIsLegal = false;
                     //moves in a straight line, vertical and horizontal
                     if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
+                        rookHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
                         moveIsLegal = true;
+                        rookHasMoved = true;
                         break;
                     }
+                    //cannot skip
+                    //can castle long or short
                 }
-                //cannot skip
-                //can castle long or short
+
                 case "BN", "WN" -> {
                     moveIsLegal = false;
                     //Moves by 2/1
@@ -213,8 +245,9 @@ class Player extends Chessboard {
                         moveIsLegal = true;
                         break;
                     }
+                    //can skip other pieces (and thus move on turn 1)
                 }
-                //can skip other pieces (and thus move on turn 1)
+
                 case "BB", "WB" -> {
                     moveIsLegal = false;
                     //moves diagonally
@@ -273,59 +306,50 @@ class Player extends Chessboard {
                     //moves by one in any direction
                     if (moveCoordinates[0] == 1 && moveCoordinates[1] == 1) {
                         moveIsLegal = true;
+                        kingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == 1 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
+                        kingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == 1 && moveCoordinates[1] == -1) {
                         moveIsLegal = true;
+                        kingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == 0 && moveCoordinates[1] == -1) {
                         moveIsLegal = true;
+                        kingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == -1 && moveCoordinates[1] == -1) {
                         moveIsLegal = true;
+                        kingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == -1 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
+                        kingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == -1 && moveCoordinates[1] == 1) {
                         moveIsLegal = true;
+                        kingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == 0 && moveCoordinates[1] == 1) {
                         moveIsLegal = true;
+                        kingHasMoved = true;
                         break;
                     }
 
                     //has to be protected
+                    //May not be endangered
 
                 }
 
-
-                case "BP" -> {
-                    moveIsLegal = false;
-                    //moves down the board by one
-                    //Moves down the board by one or two on first move
-                    //Moves up the board by one or two on first move
-                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == 0) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if ((turnCounter == 1) && (moveCoordinates[0] == 2 && moveCoordinates[1] == 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-
-                //captures diagonally
-                //captures en-passant
-                    }
                 default -> {
                 }
             }
@@ -347,14 +371,13 @@ class Player extends Chessboard {
                 moveIsLegal = false;
             }
 
-            //move endangers King
-            //move ignores checked King (enemy and own)
 
             System.out.println("------------------------ "
                     + "\r\n" + "Move coordinates: " + moveCoordinates[0] + moveCoordinates[1]
                     + "\r\n" + "move is legal: "    + moveIsLegal
                     + "\r\n" + "the piece you chose "    + piece
                     + "\r\n" + "its white's turn: " + isWhiteTurn
+                    + "\r\b" + "the piece you took "     + pieceTaken
                     + "\r\n" + "------------------------"
             );
 
@@ -362,10 +385,18 @@ class Player extends Chessboard {
                 System.out.println("I can't let you do that.");
             } else {
                 //move is legal:
-                //delete piece from destination (=00)
-                //insert piece into destination (=BP)
                 //case: there was a enemy piece there = piece gets taken
-                //case: pawn lands on last row = promotion
+                if((pieceTaken.charAt(0) == 'B' && isWhiteTurn) || (pieceTaken.charAt(0) == 'W' && !isWhiteTurn)){
+                    if(pieceTaken.charAt(0) == 'B'){
+                        blackPiecesTaken.add(pieceTaken);
+                    }else if(pieceTaken.charAt(0) == 'W'){
+                        whitePiecesTaken.add(pieceTaken);
+                    }
+                }
+                //delete piece from destination (=00)
+                Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]] = "00";
+                //insert piece into destination (=BP)
+                Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]] = piece;
 
                 System.out.println("next up!");
                 break;
@@ -423,8 +454,8 @@ public class Main {
 
             //display the new board and pieces taken
             chessboard.displayBoard();
-            System.out.println("Player Black: " + playerBlack.piecesTaken);
-            System.out.println("Player White: " + playerWhite.piecesTaken);
+            System.out.println("Player Black: " + playerBlack.whitePiecesTaken);
+            System.out.println("Player White: " + playerWhite.blackPiecesTaken);
 
         }
     }
