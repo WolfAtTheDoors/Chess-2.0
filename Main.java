@@ -4,6 +4,8 @@
  * date 19.01.2023
  * Issues:
  * - Statebased actions (check, checkmate, remis and caste legality)
+ * - userproof move inputs (a1h8)
+ * - no skipping of pieces
  */
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +86,6 @@ class Chessboard {
 class Player extends Chessboard {
     ArrayList<String> blackPiecesTaken = new ArrayList<String>();
     ArrayList<String> whitePiecesTaken = new ArrayList<String>();
-
     String originString;
 
     //constructor
@@ -105,7 +106,6 @@ class Player extends Chessboard {
         String piece = "AA";
         String pieceTaken = "AA";
         char destinationChar = 'A';
-        String destinationString ="AA";
         boolean kingHasMoved = false;
         boolean rookHasMoved = false;
 
@@ -115,9 +115,8 @@ class Player extends Chessboard {
             Scanner in = new Scanner(System.in);
             move = in.nextLine();
 
-            //Determine the move's origin and goal
+            //Determine the move's origin string
             originString = "" + move.charAt(0) + move.charAt(1);
-            destinationString = "" + move.charAt(2) + move.charAt(3);
 
             //convert origin and destination to board coordinates.
             for (int i = 0; i < 9; i++) {
@@ -156,9 +155,15 @@ class Player extends Chessboard {
             //Pawn capturing moves
             //endangering/risking the king
             //moves in check
-            //castling
+            //castling (!kingHasMoved and !rookHasMoved and space between)
             //promotion
 
+            for(int i = 0; i < moveCoordinates[0]; i++) {
+                Chessboard.chessBoardNew[destinationCoordinates[0] + (moveCoordinates[0]-i)]
+                                        [destinationCoordinates[1] + moveCoordinates[1]].equals("00");
+
+
+            }
             switch (piece) {
                 case "WP" -> {
                     moveIsLegal = false;
@@ -207,6 +212,7 @@ class Player extends Chessboard {
                         break;
                     }
                     //cannot skip
+                    //describe the spaces between origin and destination. then test if == "00"
                     //can castle long or short
                 }
 
