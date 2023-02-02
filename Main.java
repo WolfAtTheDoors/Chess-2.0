@@ -16,7 +16,7 @@ class Chessboard {
     public static boolean whiteKingLives = true;
     public static int turnCounter;
     final static String[][] chessBoardOrigin = {
-            {"-", " a", " b", " c", " d", " e", " f", " g", " h"},
+            {" ", " a", " b", " c", " d", " e", " f", " g", " h"},
             {"8", "BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR"},
             {"7", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "BP"},
             {"6", "00", "00", "00", "00", "00", "00", "00", "00"},
@@ -105,8 +105,12 @@ class Player extends Chessboard {
         boolean isPiece = false;
         boolean isWhite = false;
         boolean isBlack = false;
-        boolean kingHasMoved = false;
-        boolean rookHasMoved = false;
+        boolean whiteKingHasMoved = false;
+        boolean blackKingHasMoved = false;
+        boolean blackQueensRookHasMoved;
+        boolean blackKingsRookHasMoved;
+        boolean whiteQueensRookHasMoved;
+        boolean whiteKingsRookHasMoved;
         boolean pathIsClear = true;
         boolean moveIsLegal = true;
 
@@ -139,13 +143,13 @@ class Player extends Chessboard {
             if(moveCoordinates[0] > 0){
                 moveCoordinateAbsolute = moveCoordinates[0];
             }
-            if(moveCoordinates[0] < 0){
+            else{
                 moveCoordinateAbsolute = moveCoordinates[0]*-1;
             }
             if(moveCoordinates[1] > 0){
                 moveCoordinateAbsolute = moveCoordinates[1];
             }
-            if(moveCoordinates[1] < 0){
+            else{
                 moveCoordinateAbsolute = moveCoordinates[1]*-1;
             }
 
@@ -162,7 +166,7 @@ class Player extends Chessboard {
             }
             destinationChar = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0);
 
-            //move doesn't cross other pieces (except for knight)
+            //move doesn't cross other pieces
             for (int i = 1; i < moveCoordinateAbsolute -1; i++) {
             if (moveCoordinates[0] > 0 && moveCoordinates[1] > 0) {
                 if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1] + i].equals("00"))) {
@@ -218,14 +222,14 @@ class Player extends Chessboard {
                 pathIsClear = true;
             }
 
-            //piece rules still to implement:
-            //Pawn capturing moves
-            //Pawn double move
-            //endangering/risking the king
-            //moves in check
-            //castling (!kingHasMoved and !rookHasMoved and space between)
-            //promotion
-
+        /**    TODO:
+            Pawn capturing moves
+            Pawn double move
+            endangering/risking the king
+            moves in check
+            castling (!kingHasMoved and !rookHasMoved and space between)
+            promotion
+        */
             switch (piece) {
                 case "WP" -> {
                     moveIsLegal = false;
@@ -260,23 +264,51 @@ class Player extends Chessboard {
                     //captures en-passant
                 }
 
-                case "WR", "BR" -> {
+                case "WR" -> {
                     moveIsLegal = false;
                     //moves in a straight line, vertical and horizontal
                     if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
-                        rookHasMoved = true;
+                        //check if the rook moved
+                        if(originCoordinates[0] == 8 && originCoordinates[1] == 1) {
+                            whiteQueensRookHasMoved = true;
+                        }else if (originCoordinates[0] == 8 && originCoordinates[1] == 8){
+                            whiteKingsRookHasMoved = true;
+                        }
                         break;
                     }
                     if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
                         moveIsLegal = true;
-                        rookHasMoved = true;
+                        //check if the rook moved
+                        if(originCoordinates[0] == 8 && originCoordinates[1] == 1) {
+                            whiteQueensRookHasMoved = true;
+                        }else if (originCoordinates[0] == 8 && originCoordinates[1] == 8){
+                            whiteKingsRookHasMoved = true;
+                        }
+
                         break;
                     }
                     //cannot skip
-                    //describe the spaces between origin and destination. then test if == "00"
+                }
 
+                case "BR" -> {
+                    moveIsLegal = false;
+                    //moves in a straight line, vertical and horizontal
+                    if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
+                        moveIsLegal = true;
+                        //check if the rook moved
+                        if(originCoordinates[0] == 1 && originCoordinates[1] == 1) {
+                            blackQueensRookHasMoved = true;
+                        }else if (originCoordinates[0] == 1 && originCoordinates[1] == 8){
+                            blackKingsRookHasMoved = true;
+                        }
+                        break;
+                    }
+                    if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
+                        moveIsLegal = true;
 
+                        break;
+                    }
 
                     //can castle long or short
                 }
@@ -372,52 +404,107 @@ class Player extends Chessboard {
                     //cannot skip
                 }
 
-                case "BK", "WK" -> {
+                case "BK" -> {
                     moveIsLegal = false;
                     //moves by one in any direction
                     if (moveCoordinates[0] == 1 && moveCoordinates[1] == 1) {
                         moveIsLegal = true;
-                        kingHasMoved = true;
+                        blackKingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == 1 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
-                        kingHasMoved = true;
+                        blackKingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == 1 && moveCoordinates[1] == -1) {
                         moveIsLegal = true;
-                        kingHasMoved = true;
+                        blackKingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == 0 && moveCoordinates[1] == -1) {
                         moveIsLegal = true;
-                        kingHasMoved = true;
+                        blackKingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == -1 && moveCoordinates[1] == -1) {
                         moveIsLegal = true;
-                        kingHasMoved = true;
+                        blackKingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == -1 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
-                        kingHasMoved = true;
+                        blackKingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == -1 && moveCoordinates[1] == 1) {
                         moveIsLegal = true;
-                        kingHasMoved = true;
+                        blackKingHasMoved = true;
                         break;
                     }
                     if (moveCoordinates[0] == 0 && moveCoordinates[1] == 1) {
                         moveIsLegal = true;
-                        kingHasMoved = true;
+                        blackKingHasMoved = true;
                         break;
                     }
 
                     //has to be protected
                     //May not be endangered
+                    //can castle if (conditions)
+
+                }
+
+                case "WK" -> {
+                    moveIsLegal = false;
+                    //moves by one in any direction
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        whiteKingHasMoved = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == 0) {
+                        moveIsLegal = true;
+                        whiteKingHasMoved = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        whiteKingHasMoved = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 0 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        whiteKingHasMoved = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == -1) {
+                        moveIsLegal = true;
+                        whiteKingHasMoved = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == 0) {
+                        moveIsLegal = true;
+                        whiteKingHasMoved = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        whiteKingHasMoved = true;
+                        break;
+                    }
+                    if (moveCoordinates[0] == 0 && moveCoordinates[1] == 1) {
+                        moveIsLegal = true;
+                        whiteKingHasMoved = true;
+                        break;
+                    }
+
+                    //has to be protected
+                    //May not be endangered
+
+                    //can castle if (conditions)
+                    if((destinationCoordinates[0] == 8 && destinationCoordinates[1] == 2) && !whiteKingHasMoved && !whiteQueensRookHasMoved){
+
+                    }
 
                 }
 
@@ -496,9 +583,9 @@ public class Main {
             Chessboard.turnCounter ++;
             //Display options for player black or white?
             if (Chessboard.isWhiteTurn) {
-                System.out.println("Player White, choose wisely: " + "Move " + "Castle " + "Offer Remis " + "Concede " + "Reset the board ");
+                System.out.println("       Player White!" /*" + "Move " + "Castle " + "Offer Remis " + "Concede " + "Reset the board */);
             } else {
-                System.out.println("Player Black, choose wisely: " + "Move " + "Castle " + "Offer Remis " + "Concede " + "Reset the board ");
+                System.out.println("       Player Black!" /*+ "Move " + "Castle " + "Offer Remis " + "Concede " + "Reset the board "*/);
             }
 
             //Checks gamestates
@@ -516,8 +603,8 @@ public class Main {
 
             //display the new board and pieces taken
             chessboard.displayBoard();
-            System.out.println("Player Black: " + playerBlack.whitePiecesTaken);
-            System.out.println("Player White: " + playerWhite.blackPiecesTaken);
+            System.out.println("Player Black's Victims: " + playerBlack.whitePiecesTaken);
+            System.out.println("Player White's Victims: " + playerWhite.blackPiecesTaken);
 
         }
     }
