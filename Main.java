@@ -4,12 +4,12 @@
  * date 02.02.2023
  * Issues:
  * - State based actions (check, checkmate, remis and castle legality)
- * - user proof move inputs (a1h8)
+ * - user proof move inputs
  */
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-
 class Chessboard {
     public static boolean isWhiteTurn;
     public static boolean blackKingLives = true;
@@ -24,57 +24,126 @@ class Chessboard {
             {"4", "00", "00", "00", "00", "00", "00", "00", "00"},
             {"3", "00", "00", "00", "00", "00", "00", "00", "00"},
             {"2", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "WP"},
-            {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR"},
+            {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "BN", "WR"},
     };
+
     static String[][] chessBoardNew = chessBoardOrigin;
 
     //constructor
-    public void chessboard(){}
+    public void chessboard() {
+    }
 
-//Gamestate checks
-    public static void checkState(){
+    //Gamestate checks
+    public static void checkState() {
         boolean blackKingFound = false;
         boolean whiteKingFound = false;
 
-    //Check and Checkmate
+        //Check and Checkmate
         //Is the King alive?
-        for(int i = 0; i < 9; i++){
-            for(int j = 0; j < 9; j++){
-                if(chessBoardNew[i][j].equals("BK")){
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (chessBoardNew[i][j].equals("BK")) {
                     blackKingFound = true;
                 }
-                if(chessBoardNew[i][j].equals("WK")){
+                if (chessBoardNew[i][j].equals("WK")) {
                     whiteKingFound = true;
                 }
             }
         }
-        if(!blackKingFound){
+        if (!blackKingFound) {
             blackKingLives = false;
-            System.out.println(" And the Winner is: WHITE" );
+            System.out.println(" And the Winner is: WHITE");
 
-        }else if(!whiteKingFound){
+        } else if (!whiteKingFound) {
             whiteKingLives = false;
-            System.out.println(" And the Winner is: BLACK" );
-        }else{
+            System.out.println(" And the Winner is: BLACK");
+        } else {
             blackKingFound = false;
             whiteKingFound = false;
         }
         //Is the king checked? Is he in checkmate?
 
-    //Remis
+        //Remis
         //Are there no legal moves left?
         //Has a check become impossible? King and King, King and King-Knight, king and King-Bishop)
         //Have the players agreed to draw?
 
-    //Promition
-        //Is there a pawn on the last row of the other colour? Queening or underpromotion
+        //Promotion
+        //White
+        for (int i = 1; i < 8; i++) {
+            if (chessBoardNew[1][i].equals("WP")) {
+                String pawnsChoice = "a";
+                Scanner in = new Scanner(System.in);
+                System.out.println("                     Your Pawn has achieved great things.");
+                System.out.println("She may now choose who she wants to be: (R) Rook, (K) Knight, (B) Bishop (Q) Queen");
+                pawnsChoice = in.nextLine();
 
-    //Castling
-        //Is castling a legal move? King and rook not moved and free space between them?
+                switch (pawnsChoice) {
+                    case "R", "r" -> {
+                        chessBoardNew[1][i] = "WR";
+                        System.out.println("A Rook She shall be.");
+                        Chessboard.displayBoard();
+                    }
+                    case "K", "k" -> {
+                        chessBoardNew[1][i] = "WN";
+                        System.out.println("A Knight She shall be.");
+                        Chessboard.displayBoard();
+                    }
+                    case "B", "b" -> {
+                        chessBoardNew[1][i] = "WB";
+                        System.out.println("A Bishop She shall be.");
+                        Chessboard.displayBoard();
+                    }
+                    case "Q", "q" -> {
+                        chessBoardNew[1][i] = "WQ";
+                        System.out.println("A Queen She shall be.");
+                        Chessboard.displayBoard();
+                    }
+                }
+            }
+        }
+        //Black
+        for (int i = 1; i < 8; i++) {
+                if (chessBoardNew[8][i].equals("BP")) {
+                    String pawnsChoice = "a";
+                    Scanner in = new Scanner(System.in);
+                    System.out.println("                     Your Pawn has achieved great things.");
+                    System.out.println("She may now choose who she wants to be: (R) Rook, (K) Knight, (B) Bishop (Q) Queen");
+                    pawnsChoice = in.nextLine();
+
+                    switch (pawnsChoice) {
+                        case "R", "r" -> {
+                            chessBoardNew[8][i] = "BR";
+                            System.out.println("A Rook She shall be.");
+                            Chessboard.displayBoard();
+                            break;
+                        }
+                        case "K", "k" -> {
+                            chessBoardNew[8][i] = "BN";
+                            System.out.println("A Knight She shall be.");
+                            Chessboard.displayBoard();
+                            break;
+                        }
+                        case "B", "b" -> {
+                            chessBoardNew[8][i] = "BB";
+                            System.out.println("A Bishop She shall be.");
+                            Chessboard.displayBoard();
+                            break;
+                        }
+                        case "Q", "q" -> {
+                            chessBoardNew[8][i] = "BQ";
+                            System.out.println("A Queen She shall be.");
+                            Chessboard.displayBoard();
+                            break;
+                        }
+                    }
+                }
+        }
+
     }
 
-//Display
-    public void displayBoard(){
+    //Display
+    public static void displayBoard() {
         for (int i = 0; i < 9; i++) {
             System.out.println(Arrays.deepToString(chessBoardNew[i]));
         }
@@ -107,16 +176,17 @@ class Player extends Chessboard {
         boolean isBlack = false;
         boolean whiteKingHasMoved = false;
         boolean blackKingHasMoved = false;
-        boolean blackQueensRookHasMoved;
-        boolean blackKingsRookHasMoved;
-        boolean whiteQueensRookHasMoved;
-        boolean whiteKingsRookHasMoved;
+        boolean blackQueensRookHasMoved = false;
+        boolean blackKingsRookHasMoved = false;
+        boolean whiteQueensRookHasMoved = false;
+        boolean whiteKingsRookHasMoved = false;
         boolean pathIsClear = true;
         boolean moveIsLegal = true;
+        boolean babaIsYou;
 
         while(true) {
             //enter the move in standard format "c2c4"
-            System.out.println("Make your move. Face your fear.");
+            System.out.println("  Make your move. Face your fear.");
             Scanner in = new Scanner(System.in);
             move = in.nextLine();
 
@@ -227,8 +297,7 @@ class Player extends Chessboard {
             Pawn double move
             endangering/risking the king
             moves in check
-            castling (!kingHasMoved and !rookHasMoved and space between)
-            promotion
+            castling (!kingHasMoved and !rookHasMoved and space between empty and unthreatened, king unchecked)
         */
             switch (piece) {
                 case "WP" -> {
@@ -450,7 +519,33 @@ class Player extends Chessboard {
 
                     //has to be protected
                     //May not be endangered
-                    //can castle if (conditions)
+
+                    //can castle if (*White king moves two right, *three left, *King not moved, *rook not moved, -squares not occupied, -king not checked, -squares not threatened)
+
+                    //castle Kingside
+                    if ((moveCoordinates[0] == 0 && moveCoordinates[1] == 2) && !blackKingHasMoved && !blackKingsRookHasMoved) {
+                        moveIsLegal = true;
+                        Chessboard.chessBoardNew[8][8] = "00";
+                        Chessboard.chessBoardNew[8][5] = "00";
+                        Chessboard.chessBoardNew[8][7] = "WK";
+                        Chessboard.chessBoardNew[8][6] = "WR";
+                        blackKingHasMoved = true;
+                        blackKingsRookHasMoved = true;
+                        break;
+                    }
+
+                    //castle Queenside
+                    if ((moveCoordinates[0] == 0 && moveCoordinates[1] == -3) && !blackKingHasMoved && !blackQueensRookHasMoved) {
+                        moveIsLegal = true;
+                        Chessboard.chessBoardNew[8][1] = "00";
+                        Chessboard.chessBoardNew[8][5] = "00";
+                        Chessboard.chessBoardNew[8][2] = "WK";
+                        Chessboard.chessBoardNew[8][3] = "WR";
+                        blackKingHasMoved = true;
+                        blackQueensRookHasMoved = true;
+                        break;
+                    }
+
 
                 }
 
@@ -500,14 +595,32 @@ class Player extends Chessboard {
 
                     //has to be protected
                     //May not be endangered
+                    //can castle if (*White king moves two right, *three left, *King not moved, *rook not moved, -squares not occupied, -king not checked, -squares not threatened)
 
-                    //can castle if (conditions)
-                    if((destinationCoordinates[0] == 8 && destinationCoordinates[1] == 2) && !whiteKingHasMoved && !whiteQueensRookHasMoved){
-
+                    //castle Kingside
+                    if ((moveCoordinates[0] == 0 && moveCoordinates[1] == 2) && !whiteKingHasMoved && !whiteKingsRookHasMoved) {
+                        moveIsLegal = true;
+                        Chessboard.chessBoardNew[8][8] = "00";
+                        Chessboard.chessBoardNew[8][5] = "00";
+                        Chessboard.chessBoardNew[8][7] = "WK";
+                        Chessboard.chessBoardNew[8][6] = "WR";
+                        whiteKingHasMoved = true;
+                        whiteKingsRookHasMoved = true;
+                        break;
                     }
 
+                    //castle Queenside
+                    if ((moveCoordinates[0] == 0 && moveCoordinates[1] == -3) && !whiteKingHasMoved && !whiteQueensRookHasMoved) {
+                        moveIsLegal = true;
+                        Chessboard.chessBoardNew[8][1] = "00";
+                        Chessboard.chessBoardNew[8][5] = "00";
+                        Chessboard.chessBoardNew[8][2] = "WK";
+                        Chessboard.chessBoardNew[8][3] = "WR";
+                        whiteKingHasMoved = true;
+                        whiteQueensRookHasMoved = true;
+                        break;
+                    }
                 }
-
                 default -> {
                 }
             }
@@ -525,7 +638,7 @@ class Player extends Chessboard {
                 System.out.println("I can't let you do that.");
             }
             else if(!pathIsClear) {
-                    System.out.println("You! Shall! Not! Pass!");
+                System.out.println("You! Shall! Not! Pass!");
                 }
             else if(!isPiece){
                 System.out.println("there is no one here.");
@@ -558,9 +671,7 @@ class Player extends Chessboard {
     //choices
     public void concede(){}
     public void offerRemis(){}
-    public void castle(){}
     public void resetTheBoard(){}
-
 
 }
 
@@ -581,16 +692,15 @@ public class Main {
             Chessboard.isWhiteTurn = !Chessboard.isWhiteTurn;
             //Counts the turns
             Chessboard.turnCounter ++;
-            //Display options for player black or white?
-            if (Chessboard.isWhiteTurn) {
-                System.out.println("       Player White!" /*" + "Move " + "Castle " + "Offer Remis " + "Concede " + "Reset the board */);
-            } else {
-                System.out.println("       Player Black!" /*+ "Move " + "Castle " + "Offer Remis " + "Concede " + "Reset the board "*/);
-            }
-
             //Checks gamestates
             Chessboard.checkState();
 
+            //Display options for player black or white
+            if (Chessboard.isWhiteTurn) {
+                System.out.println("           Player White!" /*" + "Move " + "Offer Remis " + "Concede " + "Reset the board */);
+            } else {
+                System.out.println("           Player Black!" /*+ "Move " + "Offer Remis " + "Concede " + "Reset the board "*/);
+            }
 
             //+++++PLAYER MOVE++++++
             if (Chessboard.isWhiteTurn) {
@@ -600,9 +710,8 @@ public class Main {
             }
             //*****PLAYER MOVE******
 
-
             //display the new board and pieces taken
-            chessboard.displayBoard();
+            Chessboard.displayBoard();
             System.out.println("Player Black's Victims: " + playerBlack.whitePiecesTaken);
             System.out.println("Player White's Victims: " + playerWhite.blackPiecesTaken);
 
