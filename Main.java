@@ -4,10 +4,9 @@
  * @version: 0.5
  * @since: 15.02.2023
  * TODO:
- * - State based actions (check, checkmate, remis and castle legality)
- * - user proof move inputs
+ * - State based actions (check, checkmate, risk, remis and castle legality)
+ * - user proof move inputs (setmove)
  * - Pawn capturing moves
- * - Pawn double move
  * - threatening/risking the king
  * - moves in check
  * - castling (space between empty and unthreatened, king unchecked)
@@ -161,6 +160,28 @@ class Player extends Chessboard {
     ArrayList<String> blackPiecesTaken = new ArrayList<String>();
     ArrayList<String> whitePiecesTaken = new ArrayList<String>();
     String originString;
+    private String move = "a1h8";
+
+    public String getMove() {
+        return move;
+    }
+
+    public void setMove(String move) {
+        String columnsString = "abcdefgh";
+        String rowString = "12345678";
+
+        if(
+           (columnsString.contains(String.valueOf(getMove().charAt(0))))
+        && (rowString.contains(String.valueOf(getMove().charAt(1))))
+        && (columnsString.contains(String.valueOf(getMove().charAt(2))))
+        && (rowString.contains(String.valueOf(getMove().charAt(3))))
+        && getMove().length() == 4
+        ){
+        this.move = move;
+}else{
+            System.out.println("I don't understand what you are saying.");
+        }
+    }
 
     //constructor
     public void player() {
@@ -172,7 +193,6 @@ class Player extends Chessboard {
         int[] destinationCoordinates = {0, 0};
         int[] moveCoordinates = {0, 0};
         int moveCoordinateAbsolute = 0;
-        String move = "abcdefgh";
         String piece = "AA";
         String pieceTaken = "AA";
         char destinationChar = 'A';
@@ -194,24 +214,24 @@ class Player extends Chessboard {
             //enter the move in standard format "c2c4"
             System.out.println("  Make your move. Face your fear.");
             Scanner in = new Scanner(System.in);
-            move = in.nextLine();
+            setMove(in.nextLine());
 
             //Determine the move's origin string
-            originString = "" + move.charAt(0) + move.charAt(1);
+            originString = "" + getMove().charAt(0) + getMove().charAt(1);
 
             //convert origin and destination to board coordinates.
             for (int i = 0; i < 9; i++) {
-                if (columns[i] == move.charAt(0)) {
+                if (columns[i] == getMove().charAt(0)) {
                     originCoordinates[1] = i;
                 }
             }
-            originCoordinates[0] = 9 - Character.getNumericValue(move.charAt(1));
+            originCoordinates[0] = 9 - Character.getNumericValue(getMove().charAt(1));
             for (int i = 0; i < 9; i++) {
-                if (columns[i] == move.charAt(2)) {
+                if (columns[i] == getMove().charAt(2)) {
                     destinationCoordinates[1] = i;
                 }
             }
-            destinationCoordinates[0] = 9 - Character.getNumericValue(move.charAt(3));
+            destinationCoordinates[0] = 9 - Character.getNumericValue(getMove().charAt(3));
 
             //determine the moveCoordinates and their absolute value
             moveCoordinates[0] = destinationCoordinates[0] - originCoordinates[0];
@@ -230,17 +250,17 @@ class Player extends Chessboard {
             }
 
             //parse if there is a piece and what color
-            piece = Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]];
-            pieceTaken = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]];
-            if (!Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]].equals("00")) {
-                isPiece = true;
-                if (piece.charAt(0) == 'B') {
-                    isBlack = true;
-                } else if (piece.charAt(0) == 'W') {
-                    isWhite = true;
-                }
-            }
-            destinationChar = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0);
+                    piece = Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]];
+                    pieceTaken = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]];
+                    if (!Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]].equals("00")) {
+                        isPiece = true;
+                        if (piece.charAt(0) == 'B') {
+                            isBlack = true;
+                        } else if (piece.charAt(0) == 'W') {
+                            isWhite = true;
+                        }
+                    }
+                    destinationChar = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0);
 
             //move doesn't cross other pieces
             for (int i = 1; i < moveCoordinateAbsolute -1; i++) {
@@ -629,7 +649,7 @@ class Player extends Chessboard {
             }
 
             System.out.println("------------------------ "
-                    + "\r\n" + "Move coordinates: " + moveCoordinates[0] + moveCoordinates[1]
+                    + "\r\n" + "Move: " + getMove()
                     + "\r\n" + "move is legal: "    + moveIsLegal
                     + "\r\n" + "the path is clear: "+ pathIsClear
                     + "\r\n" + "its white's turn: " + isWhiteTurn
