@@ -4,12 +4,12 @@
  * @version: 0.5
  * @since: 15.02.2023
  * TODO:
- * - State based actions (check, checkmate, risk, remis and castle legality)
- * - user proof move inputs (setmove)
  * - Pawn capturing moves
  * - threatening/risking the king
+ * - State based actions (check, checkmate, risk, remis and castle legality)
  * - moves in check, moves to protecc
- * - castling (space between empty and unthreatened, king unchecked)
+ * - castling (space between empty and not threatened, king unchecked)
+ * - user proof move inputs (setMove)
  */
 
 import java.util.ArrayList;
@@ -66,6 +66,8 @@ class Chessboard {
             blackKingFound = false;
             whiteKingFound = false;
         }
+
+
         //Is the king checked? Is he in checkmate?
 
         //Remis
