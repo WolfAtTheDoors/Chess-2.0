@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ff93932a-cd57-405f-9510-6810a7c0c22a" name="Changes" comment="Pawn double move complete">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="ff93932a-cd57-405f-9510-6810a7c0c22a" name="Changes" comment="work on userproofing">
       <change beforePath="$PROJECT_DIR$/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/production/Chess-2.0/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/production/Chess-2.0/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +92,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676449259852</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="work on userproofing">
+      <created>1676459590348</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1676459590348</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -114,6 +119,7 @@
     <MESSAGE value="skipping pieces prohibited complete" />
     <MESSAGE value="Promotion complete" />
     <MESSAGE value="Pawn double move complete" />
-    <option name="LAST_COMMIT_MESSAGE" value="Pawn double move complete" />
+    <MESSAGE value="work on userproofing" />
+    <option name="LAST_COMMIT_MESSAGE" value="work on userproofing" />
   </component>
 </project>

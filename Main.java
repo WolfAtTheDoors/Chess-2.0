@@ -8,7 +8,7 @@
  * - user proof move inputs (setmove)
  * - Pawn capturing moves
  * - threatening/risking the king
- * - moves in check
+ * - moves in check, moves to protecc
  * - castling (space between empty and unthreatened, king unchecked)
  */
 
