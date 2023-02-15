@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ff93932a-cd57-405f-9510-6810a7c0c22a" name="Changes" comment="skipping pieces prohibited complete">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="ff93932a-cd57-405f-9510-6810a7c0c22a" name="Changes" comment="Promotion complete">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/production/Chess-2.0/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/production/Chess-2.0/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/production/Chess-2.0/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/production/Chess-2.0/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -82,7 +80,14 @@
       <option name="project" value="LOCAL" />
       <updated>1675343412078</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Promotion complete">
+      <created>1676360651239</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1676360651239</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -100,6 +105,7 @@
     <MESSAGE value="basic moves" />
     <MESSAGE value="basic moves complete for all pieces" />
     <MESSAGE value="skipping pieces prohibited complete" />
-    <option name="LAST_COMMIT_MESSAGE" value="skipping pieces prohibited complete" />
+    <MESSAGE value="Promotion complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="Promotion complete" />
   </component>
 </project>

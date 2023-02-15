@@ -1,10 +1,16 @@
 /**
- * Chess 2.0
- * author: Gisela Wolf
- * date 02.02.2023
- * Issues:
+ * Chess 2.0 is a chess game. It is a work in progress.
+ * @author: Gisela Wolf
+ * @version: 0.5
+ * @since: 15.02.2023
+ * TODO:
  * - State based actions (check, checkmate, remis and castle legality)
  * - user proof move inputs
+ * - Pawn capturing moves
+ * - Pawn double move
+ * - threatening/risking the king
+ * - moves in check
+ * - castling (space between empty and unthreatened, king unchecked)
  */
 
 import java.util.ArrayList;
@@ -292,22 +298,18 @@ class Player extends Chessboard {
                 pathIsClear = true;
             }
 
-        /**    TODO:
-            Pawn capturing moves
-            Pawn double move
-            endangering/risking the king
-            moves in check
-            castling (!kingHasMoved and !rookHasMoved and space between empty and unthreatened, king unchecked)
-        */
+            //individual pieces' movesets. Depending on which piece has been chosen
             switch (piece) {
                 case "WP" -> {
                     moveIsLegal = false;
-                    //Moves up the board by one or two on first move
+                    //Moves up the board by one
                     if (moveCoordinates[0] == -1 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
                         break;
                     }
-                    if ((turnCounter == 1) && (moveCoordinates[0] == -2 && moveCoordinates[1] == 0)) {
+                    //or two on the first move
+                    if ((originCoordinates[0] == 7)
+                        && (moveCoordinates[0] == -2 && moveCoordinates[1] == 0)) {
                         moveIsLegal = true;
                         break;
                     }
@@ -318,13 +320,14 @@ class Player extends Chessboard {
                 case "BP" -> {
                     moveIsLegal = false;
                     //moves down the board by one
-                    //Moves down the board by one or two on first move
-                    //Moves up the board by one or two on first move
+                    //Moves down the board by one
                     if (moveCoordinates[0] == 1 && moveCoordinates[1] == 0) {
                         moveIsLegal = true;
                         break;
                     }
-                    if ((turnCounter == 2) && (moveCoordinates[0] == 2 && moveCoordinates[1] == 0)) {
+                    //or two on first move
+                    if ((originCoordinates[0] == 2)
+                            && (moveCoordinates[0] == 2 && moveCoordinates[1] == 0)) {
                         moveIsLegal = true;
                         break;
                     }
@@ -718,6 +721,3 @@ public class Main {
         }
     }
 }
-
-
-
