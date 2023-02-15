@@ -70,14 +70,14 @@ class Chessboard {
 
         //Remis
         //Are there no legal moves left?
-        //Has a check become impossible? King and King, King and King-Knight, king and King-Bishop)
+        //Has a check become impossible? (King and King, King and King-Knight, king and King-Bishop)
         //Have the players agreed to draw?
 
         //Promotion
         //White
         for (int i = 1; i < 8; i++) {
             if (chessBoardNew[1][i].equals("WP")) {
-                String pawnsChoice = "a";
+                String pawnsChoice;
                 Scanner in = new Scanner(System.in);
                 System.out.println("                     Your Pawn has achieved great things.");
                 System.out.println("She may now choose who she wants to be: (R) Rook, (K) Knight, (B) Bishop (Q) Queen");
@@ -110,7 +110,7 @@ class Chessboard {
         //Black
         for (int i = 1; i < 8; i++) {
                 if (chessBoardNew[8][i].equals("BP")) {
-                    String pawnsChoice = "a";
+                    String pawnsChoice;
                     Scanner in = new Scanner(System.in);
                     System.out.println("                     Your Pawn has achieved great things.");
                     System.out.println("She may now choose who she wants to be: (R) Rook, (K) Knight, (B) Bishop (Q) Queen");
@@ -121,25 +121,21 @@ class Chessboard {
                             chessBoardNew[8][i] = "BR";
                             System.out.println("A Rook She shall be.");
                             Chessboard.displayBoard();
-                            break;
                         }
                         case "K", "k" -> {
                             chessBoardNew[8][i] = "BN";
                             System.out.println("A Knight She shall be.");
                             Chessboard.displayBoard();
-                            break;
                         }
                         case "B", "b" -> {
                             chessBoardNew[8][i] = "BB";
                             System.out.println("A Bishop She shall be.");
                             Chessboard.displayBoard();
-                            break;
                         }
                         case "Q", "q" -> {
                             chessBoardNew[8][i] = "BQ";
                             System.out.println("A Queen She shall be.");
                             Chessboard.displayBoard();
-                            break;
                         }
                     }
                 }
@@ -157,8 +153,8 @@ class Chessboard {
 }
 
 class Player extends Chessboard {
-    ArrayList<String> blackPiecesTaken = new ArrayList<String>();
-    ArrayList<String> whitePiecesTaken = new ArrayList<String>();
+    ArrayList<String> blackPiecesTaken = new ArrayList<>();
+    ArrayList<String> whitePiecesTaken = new ArrayList<>();
     String originString;
     private String move = "a1h8";
 
@@ -192,10 +188,10 @@ class Player extends Chessboard {
         int[] originCoordinates = {0, 0};
         int[] destinationCoordinates = {0, 0};
         int[] moveCoordinates = {0, 0};
-        int moveCoordinateAbsolute = 0;
-        String piece = "AA";
-        String pieceTaken = "AA";
-        char destinationChar = 'A';
+        int moveCoordinateAbsolute;
+        String piece;
+        String pieceTaken;
+        char destinationChar;
         char[] columns = {'-', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
         boolean isPiece = false;
         boolean isWhite = false;
@@ -331,7 +327,6 @@ class Player extends Chessboard {
                     if ((originCoordinates[0] == 7)
                         && (moveCoordinates[0] == -2 && moveCoordinates[1] == 0)) {
                         moveIsLegal = true;
-                        break;
                     }
                     //captures diagonally
                     //captures en-passant
@@ -349,7 +344,6 @@ class Player extends Chessboard {
                     if ((originCoordinates[0] == 2)
                             && (moveCoordinates[0] == 2 && moveCoordinates[1] == 0)) {
                         moveIsLegal = true;
-                        break;
                     }
 
                     //captures diagonally
@@ -377,8 +371,6 @@ class Player extends Chessboard {
                         }else if (originCoordinates[0] == 8 && originCoordinates[1] == 8){
                             whiteKingsRookHasMoved = true;
                         }
-
-                        break;
                     }
                     //cannot skip
                 }
@@ -399,7 +391,6 @@ class Player extends Chessboard {
                     if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
                         moveIsLegal = true;
 
-                        break;
                     }
 
                     //can castle long or short
@@ -438,7 +429,6 @@ class Player extends Chessboard {
                     }
                     if (moveCoordinates[0] == -2 && moveCoordinates[1] == 1) {
                         moveIsLegal = true;
-                        break;
                     }
                     //can skip other pieces (and thus move on turn 1)
                 }
@@ -460,7 +450,6 @@ class Player extends Chessboard {
                     }
                     if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
                         moveIsLegal = true;
-                        break;
                     }
                     //cannot skip other pieces
                 }
@@ -491,7 +480,6 @@ class Player extends Chessboard {
                     }
                     if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
                         moveIsLegal = true;
-                        break;
                     }
                     //cannot skip
                 }
@@ -566,7 +554,6 @@ class Player extends Chessboard {
                         Chessboard.chessBoardNew[8][3] = "WR";
                         blackKingHasMoved = true;
                         blackQueensRookHasMoved = true;
-                        break;
                     }
 
 
@@ -641,7 +628,6 @@ class Player extends Chessboard {
                         Chessboard.chessBoardNew[8][3] = "WR";
                         whiteKingHasMoved = true;
                         whiteQueensRookHasMoved = true;
-                        break;
                     }
                 }
                 default -> {
@@ -674,7 +660,7 @@ class Player extends Chessboard {
             }
              else {
                 //move is legal:
-                //case: there was a enemy piece there = piece gets taken
+                //case: there was an enemy piece there = piece gets taken
                 if((pieceTaken.charAt(0) == 'B' && isWhiteTurn) || (pieceTaken.charAt(0) == 'W' && !isWhiteTurn)){
                     if(pieceTaken.charAt(0) == 'B'){
                         blackPiecesTaken.add(pieceTaken);
@@ -700,7 +686,6 @@ class Player extends Chessboard {
 
 public class Main {
     public static void main(String[] args) {
-        Chessboard chessboard = new Chessboard();
         Player playerWhite = new Player();
         Player playerBlack = new Player();
 
