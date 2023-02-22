@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Arraytest/Arraytest.iml" filepath="$PROJECT_DIR$/Arraytest/Arraytest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Chess-2.0.iml" filepath="$PROJECT_DIR$/.idea/Chess-2.0.iml" />
     </modules>
   </component>

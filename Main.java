@@ -21,18 +21,63 @@ class Chessboard {
     public static boolean whiteKingLives = true;
     public static int turnCounter;
     final static String[][] chessBoardOrigin = {
-            {" ", " a", " b", " c", " d", " e", " f", " g", " h"},
-            {"8", "BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR"},
-            {"7", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "BP"},
-            {"6", "00", "00", "00", "00", "00", "00", "00", "00"},
-            {"5", "00", "00", "00", "00", "00", "00", "00", "00"},
-            {"4", "00", "00", "00", "00", "00", "00", "00", "00"},
-            {"3", "00", "00", "00", "00", "00", "00", "00", "00"},
-            {"2", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "WP"},
-            {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "BN", "WR"},
+            {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
+            {"8", "BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR", "8"},
+            {"7", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "7"},
+            {"6", "00", "00", "00", "00", "00", "00", "00", "00", "6"},
+            {"5", "00", "00", "00", "00", "00", "00", "00", "00", "5"},
+            {"4", "00", "00", "00", "00", "00", "00", "00", "00", "4"},
+            {"3", "00", "00", "00", "00", "00", "00", "00", "00", "3"},
+            {"2", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "2"},
+            {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "BN", "WR", "1"},
+            {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
     };
 
     static String[][] chessBoardNew = chessBoardOrigin;
+    static String[][][] chessBoardTurnByTurn = {
+    //first array
+            {
+                //first row
+                    {
+                            chessBoardNew[0][1], chessBoardNew[0][2], chessBoardNew[0][3], chessBoardNew[0][4],
+                            chessBoardNew[0][5], chessBoardNew[0][6], chessBoardNew[0][7], chessBoardNew[0][8],
+                    },
+                //second row
+                    {
+                            chessBoardNew[1][1], chessBoardNew[1][2], chessBoardNew[1][3], chessBoardNew[1][4],
+                            chessBoardNew[1][5], chessBoardNew[1][6], chessBoardNew[1][7], chessBoardNew[1][8],
+                    },
+                    {
+                            chessBoardNew[2][1], chessBoardNew[2][2], chessBoardNew[2][3], chessBoardNew[2][4],
+                            chessBoardNew[2][5], chessBoardNew[2][6], chessBoardNew[2][7], chessBoardNew[2][8],
+                    },
+                    {
+                            chessBoardNew[3][1], chessBoardNew[3][2], chessBoardNew[3][3], chessBoardNew[3][4],
+                            chessBoardNew[3][5], chessBoardNew[3][6], chessBoardNew[3][7], chessBoardNew[3][8],
+                    },
+                    {
+                            chessBoardNew[4][1], chessBoardNew[4][2], chessBoardNew[4][3], chessBoardNew[4][4],
+                            chessBoardNew[4][5], chessBoardNew[4][6], chessBoardNew[4][7], chessBoardNew[4][8],
+                    },
+                    {
+                            chessBoardNew[5][1], chessBoardNew[5][2], chessBoardNew[5][3], chessBoardNew[5][4],
+                            chessBoardNew[5][5], chessBoardNew[5][6], chessBoardNew[5][7], chessBoardNew[5][8],
+                    },
+                    {
+                            chessBoardNew[6][1], chessBoardNew[6][2], chessBoardNew[6][3], chessBoardNew[6][4],
+                            chessBoardNew[6][5], chessBoardNew[6][6], chessBoardNew[6][7], chessBoardNew[6][8],
+                    },
+                    {
+                            chessBoardNew[7][1], chessBoardNew[7][2], chessBoardNew[7][3], chessBoardNew[7][4],
+                            chessBoardNew[7][5], chessBoardNew[7][6], chessBoardNew[7][7], chessBoardNew[7][8],
+                    },
+                    {
+                            chessBoardNew[8][1], chessBoardNew[8][2], chessBoardNew[8][3], chessBoardNew[8][4],
+                            chessBoardNew[8][5], chessBoardNew[8][6], chessBoardNew[8][7], chessBoardNew[8][8],
+                    }
+            }
+    }
+    ;
 
     //constructor
     public void chessboard() {
@@ -147,11 +192,13 @@ class Chessboard {
 
     //Display
     public static void displayBoard() {
-        for (int i = 0; i < 9; i++) {
-            System.out.println(Arrays.deepToString(chessBoardNew[i]));
-        }
-    }
 
+          for (int i = 0; i < 10; i++) {
+            System.out.println(Arrays.deepToString(chessBoardNew[i]));
+          //  System.out.println("\r\n");
+        }
+
+    }
 }
 
 class Player extends Chessboard {
@@ -159,11 +206,9 @@ class Player extends Chessboard {
     ArrayList<String> whitePiecesTaken = new ArrayList<>();
     String originString;
     private String move = "a1h8";
-
     public String getMove() {
         return move;
     }
-
     public void setMove(String move) {
         String columnsString = "abcdefgh";
         String rowString = "12345678";
@@ -320,8 +365,10 @@ class Player extends Chessboard {
             switch (piece) {
                 case "WP" -> {
                     moveIsLegal = false;
-                    //Moves up the board by one
-                    if (moveCoordinates[0] == -1 && moveCoordinates[1] == 0) {
+                    //Moves up the board by one if unblocked
+                    if ((moveCoordinates[0] == -1 && moveCoordinates[1] == 0)
+                      && ((Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0)) == '0'))
+                    {
                         moveIsLegal = true;
                         break;
                     }
@@ -330,8 +377,37 @@ class Player extends Chessboard {
                         && (moveCoordinates[0] == -2 && moveCoordinates[1] == 0)) {
                         moveIsLegal = true;
                     }
+
                     //captures diagonally
-                    //captures en-passant
+                    if((chessBoardNew[originCoordinates[0] -1][originCoordinates[1] -1]).charAt(0) == 'B'
+                      && (moveCoordinates[0] == -1 && moveCoordinates[1] == -1))
+                    {
+                        moveIsLegal = true;
+                    }
+                    if((chessBoardNew[originCoordinates[0] -1][originCoordinates[1] +1]).charAt(0) == 'B'
+                            && (moveCoordinates[0] == -1 && moveCoordinates[1] == +1))
+                    {
+                        moveIsLegal = true;
+                    }
+
+                    //captures en-passant left
+                    if(
+                            (destinationCoordinates[0] == 5)
+                            && (moveCoordinates[0] == -1 && moveCoordinates[1] == -1)
+                            && (chessBoardNew[originCoordinates[0]][originCoordinates[1] -1]).charAt(0) == 'B'
+                    ){
+                        moveIsLegal = true;
+                    }
+
+                    //captures en-passant right
+                    if(
+                            (destinationCoordinates[0] == 5)
+                            && (moveCoordinates[0] == -1 && moveCoordinates[1] == +1)
+                            && (chessBoardNew[originCoordinates[0]][originCoordinates[1] +1]).charAt(0) == 'B'
+                    ){
+                        moveIsLegal = true;
+                    }
+
                 }
 
                 case "BP" -> {
@@ -349,6 +425,16 @@ class Player extends Chessboard {
                     }
 
                     //captures diagonally
+                    if((chessBoardNew[originCoordinates[0] +1][originCoordinates[1] -1]).charAt(0) == 'W'
+                            && (moveCoordinates[0] == +1 && moveCoordinates[1] == -1))
+                    {
+                        moveIsLegal = true;
+                    }
+                    if((chessBoardNew[originCoordinates[0] +1][originCoordinates[1] +1]).charAt(0) == 'W'
+                            && (moveCoordinates[0] == +1 && moveCoordinates[1] == +1))
+                    {
+                        moveIsLegal = true;
+                    }
                     //captures en-passant
                 }
 
@@ -637,7 +723,7 @@ class Player extends Chessboard {
             }
 
             System.out.println("------------------------ "
-                    + "\r\n" + "Move: " + getMove()
+                    + "\r\n" + "Char at 0: " + (chessBoardNew[originCoordinates[0] -1][originCoordinates[1] -1]).charAt(0)
                     + "\r\n" + "move is legal: "    + moveIsLegal
                     + "\r\n" + "the path is clear: "+ pathIsClear
                     + "\r\n" + "its white's turn: " + isWhiteTurn
@@ -692,7 +778,7 @@ public class Main {
         Player playerBlack = new Player();
 
         //Display reset Board
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             System.out.println(Arrays.deepToString(Chessboard.chessBoardOrigin[i]));
         }
 
@@ -719,6 +805,8 @@ public class Main {
                 playerBlack.move();
             }
             //*****PLAYER MOVE******
+
+
 
             //display the new board and pieces taken
             Chessboard.displayBoard();
