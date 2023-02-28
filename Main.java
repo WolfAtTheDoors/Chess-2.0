@@ -4,9 +4,9 @@
  * @version: 0.5
  * @since: 15.02.2023
  * TODO:
- * - Pawn capturing moves
- * - threatening/risking the king
+ * - Pawn capturing en-passant
  * - State based actions (check, checkmate, risk, remis and castle legality)
+ * - threatening/risking the king
  * - moves in check, moves to protecc
  * - castling (space between empty and not threatened, king unchecked)
  * - user proof move inputs (setMove)
@@ -19,7 +19,7 @@ class Chessboard {
     public static boolean isWhiteTurn;
     public static boolean blackKingLives = true;
     public static boolean whiteKingLives = true;
-    public static int turnCounter;
+    public static int turnCounter = 0;
     final static String[][] chessBoardOrigin = {
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
             {"8", "BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR", "8"},
@@ -29,55 +29,12 @@ class Chessboard {
             {"4", "00", "00", "00", "00", "00", "00", "00", "00", "4"},
             {"3", "00", "00", "00", "00", "00", "00", "00", "00", "3"},
             {"2", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "2"},
-            {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "BN", "WR", "1"},
+            {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR", "1"},
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
     };
 
     static String[][] chessBoardNew = chessBoardOrigin;
-    static String[][][] chessBoardTurnByTurn = {
-    //first array
-            {
-                //first row
-                    {
-                            chessBoardNew[0][1], chessBoardNew[0][2], chessBoardNew[0][3], chessBoardNew[0][4],
-                            chessBoardNew[0][5], chessBoardNew[0][6], chessBoardNew[0][7], chessBoardNew[0][8],
-                    },
-                //second row
-                    {
-                            chessBoardNew[1][1], chessBoardNew[1][2], chessBoardNew[1][3], chessBoardNew[1][4],
-                            chessBoardNew[1][5], chessBoardNew[1][6], chessBoardNew[1][7], chessBoardNew[1][8],
-                    },
-                    {
-                            chessBoardNew[2][1], chessBoardNew[2][2], chessBoardNew[2][3], chessBoardNew[2][4],
-                            chessBoardNew[2][5], chessBoardNew[2][6], chessBoardNew[2][7], chessBoardNew[2][8],
-                    },
-                    {
-                            chessBoardNew[3][1], chessBoardNew[3][2], chessBoardNew[3][3], chessBoardNew[3][4],
-                            chessBoardNew[3][5], chessBoardNew[3][6], chessBoardNew[3][7], chessBoardNew[3][8],
-                    },
-                    {
-                            chessBoardNew[4][1], chessBoardNew[4][2], chessBoardNew[4][3], chessBoardNew[4][4],
-                            chessBoardNew[4][5], chessBoardNew[4][6], chessBoardNew[4][7], chessBoardNew[4][8],
-                    },
-                    {
-                            chessBoardNew[5][1], chessBoardNew[5][2], chessBoardNew[5][3], chessBoardNew[5][4],
-                            chessBoardNew[5][5], chessBoardNew[5][6], chessBoardNew[5][7], chessBoardNew[5][8],
-                    },
-                    {
-                            chessBoardNew[6][1], chessBoardNew[6][2], chessBoardNew[6][3], chessBoardNew[6][4],
-                            chessBoardNew[6][5], chessBoardNew[6][6], chessBoardNew[6][7], chessBoardNew[6][8],
-                    },
-                    {
-                            chessBoardNew[7][1], chessBoardNew[7][2], chessBoardNew[7][3], chessBoardNew[7][4],
-                            chessBoardNew[7][5], chessBoardNew[7][6], chessBoardNew[7][7], chessBoardNew[7][8],
-                    },
-                    {
-                            chessBoardNew[8][1], chessBoardNew[8][2], chessBoardNew[8][3], chessBoardNew[8][4],
-                            chessBoardNew[8][5], chessBoardNew[8][6], chessBoardNew[8][7], chessBoardNew[8][8],
-                    }
-            }
-    }
-    ;
+    static String[][][] chessBoardTurnByTurn = new String[100][10][10];
 
     //constructor
     public void chessboard() {
@@ -413,11 +370,13 @@ class Player extends Chessboard {
                 case "BP" -> {
                     moveIsLegal = false;
                     //moves down the board by one
-                    //Moves down the board by one
-                    if (moveCoordinates[0] == 1 && moveCoordinates[1] == 0) {
+                    if ((moveCoordinates[0] == +1 && moveCoordinates[1] == 0)
+                            && ((Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0)) == '0'))
+                    {
                         moveIsLegal = true;
                         break;
                     }
+
                     //or two on first move
                     if ((originCoordinates[0] == 2)
                             && (moveCoordinates[0] == 2 && moveCoordinates[1] == 0)) {
@@ -806,6 +765,13 @@ public class Main {
             }
             //*****PLAYER MOVE******
 
+            //saving previous move to chessBoardTurnByTurn
+
+            for(int i = 0; i<9; i++){
+                for(int j = 0; j<9; j++){
+                    Chessboard.chessBoardTurnByTurn[Chessboard.turnCounter][i][j] = Chessboard.chessBoardNew[i][j];
+                }
+            }
 
 
             //display the new board and pieces taken
