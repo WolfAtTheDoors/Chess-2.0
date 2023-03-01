@@ -4,7 +4,6 @@
  * @version: 0.5
  * @since: 15.02.2023
  * TODO:
- * - Pawn capturing en-passant
  * - State based actions (check, checkmate, risk, remis and castle legality)
  * - threatening/risking the king
  * - moves in check, moves to protecc
@@ -19,7 +18,7 @@ class Chessboard {
     public static boolean isWhiteTurn;
     public static boolean blackKingLives = true;
     public static boolean whiteKingLives = true;
-    public static int turnCounter = 0;
+    public static int turnCounter = 1;
     final static String[][] chessBoardOrigin = {
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
             {"8", "BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR", "8"},
@@ -35,6 +34,7 @@ class Chessboard {
 
     static String[][] chessBoardNew = chessBoardOrigin;
     static String[][][] chessBoardTurnByTurn = new String[100][10][10];
+
 
     //constructor
     public void chessboard() {
@@ -83,8 +83,9 @@ class Chessboard {
             if (chessBoardNew[1][i].equals("WP")) {
                 String pawnsChoice;
                 Scanner in = new Scanner(System.in);
-                System.out.println("                     Your Pawn has achieved great things.");
-                System.out.println("She may now choose who she wants to be: (R) Rook, (K) Knight, (B) Bishop (Q) Queen");
+                System.out.println("Your Pawn has achieved great things.");
+                System.out.println("She may now choose who she wants to be:" +"\r\n"
+                        +"(R) Rook, (K) Knight, (B) Bishop (Q) Queen");
                 pawnsChoice = in.nextLine();
 
                 switch (pawnsChoice) {
@@ -349,22 +350,31 @@ class Player extends Chessboard {
 
                     //captures en-passant left
                     if(
-                            (destinationCoordinates[0] == 5)
-                            && (moveCoordinates[0] == -1 && moveCoordinates[1] == -1)
-                            && (chessBoardNew[originCoordinates[0]][originCoordinates[1] -1]).charAt(0) == 'B'
+                       destinationCoordinates[0] == 3
+                              && (moveCoordinates[0] == -1 && moveCoordinates[1] == -1)
+                              && chessBoardNew[originCoordinates[0]][originCoordinates[1] -1].equals("BP")
+                              && chessBoardTurnByTurn[turnCounter -1][2][originCoordinates[1] -1].equals("BP")
+
                     ){
                         moveIsLegal = true;
+                        chessBoardNew[originCoordinates[0]][originCoordinates[1] -1] = "00";
+                        blackPiecesTaken.add("BP");
+
                     }
 
                     //captures en-passant right
                     if(
-                            (destinationCoordinates[0] == 5)
+                      destinationCoordinates[0] == 3
                             && (moveCoordinates[0] == -1 && moveCoordinates[1] == +1)
-                            && (chessBoardNew[originCoordinates[0]][originCoordinates[1] +1]).charAt(0) == 'B'
+                            && chessBoardNew[originCoordinates[0]][originCoordinates[1] +1].equals("BP")
+                            && chessBoardTurnByTurn[turnCounter -1][2][originCoordinates[1] +1].equals("BP")
+
                     ){
                         moveIsLegal = true;
-                    }
+                        chessBoardNew[originCoordinates[0]][originCoordinates[1] +1] = "00";
+                        blackPiecesTaken.add("BP");
 
+                    }
                 }
 
                 case "BP" -> {
@@ -394,7 +404,34 @@ class Player extends Chessboard {
                     {
                         moveIsLegal = true;
                     }
-                    //captures en-passant
+
+                    //captures en-passant left
+                    if(
+                            destinationCoordinates[0] == 6
+                                    && (moveCoordinates[0] == +1 && moveCoordinates[1] == -1)
+                                    && chessBoardNew[originCoordinates[0]][originCoordinates[1] -1].equals("WP")
+                                    && chessBoardTurnByTurn[turnCounter -1][7][originCoordinates[1] -1].equals("WP")
+
+                    ){
+                        moveIsLegal = true;
+                        chessBoardNew[originCoordinates[0]][originCoordinates[1] -1] = "00";
+                        whitePiecesTaken.add("WP");
+
+                    }
+
+                    //captures en-passant right
+                    if(
+                            destinationCoordinates[0] == 6
+                                    && (moveCoordinates[0] == +1 && moveCoordinates[1] == +1)
+                                    && chessBoardNew[originCoordinates[0]][originCoordinates[1] +1].equals("WP")
+                                    && chessBoardTurnByTurn[turnCounter -1][7][originCoordinates[1] +1].equals("WP")
+
+                    ){
+                        moveIsLegal = true;
+                        chessBoardNew[originCoordinates[0]][originCoordinates[1] +1] = "00";
+                        whitePiecesTaken.add("WP");
+
+                    }
                 }
 
                 case "WR" -> {
@@ -681,14 +718,6 @@ class Player extends Chessboard {
                 }
             }
 
-            System.out.println("------------------------ "
-                    + "\r\n" + "Char at 0: " + (chessBoardNew[originCoordinates[0] -1][originCoordinates[1] -1]).charAt(0)
-                    + "\r\n" + "move is legal: "    + moveIsLegal
-                    + "\r\n" + "the path is clear: "+ pathIsClear
-                    + "\r\n" + "its white's turn: " + isWhiteTurn
-                    + "\r\n" + "------------------------"
-            );
-
             //parse move legality
             if (!moveIsLegal) {
                 System.out.println("I can't let you do that.");
@@ -717,7 +746,7 @@ class Player extends Chessboard {
                 }
                 //delete piece from destination (=00)
                 Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]] = "00";
-                //insert piece into destination (=BP)
+                //insert piece into destination K K(=BP)
                 Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]] = piece;
                 break;
             }
@@ -745,10 +774,6 @@ public class Main {
         while (Chessboard.blackKingLives && Chessboard.whiteKingLives) {
             //change player turn (white true, black false)
             Chessboard.isWhiteTurn = !Chessboard.isWhiteTurn;
-            //Counts the turns
-            Chessboard.turnCounter ++;
-            //Checks gamestates
-            Chessboard.checkState();
 
             //Display options for player black or white
             if (Chessboard.isWhiteTurn) {
@@ -760,25 +785,36 @@ public class Main {
             //+++++PLAYER MOVE++++++
             if (Chessboard.isWhiteTurn) {
                 playerWhite.move();
+                Chessboard.turnCounter ++;
+                //saving previous move to chessBoardTurnByTurn
+                for(int i = 0; i<9; i++){
+                    for(int j = 0; j<9; j++){
+                        Chessboard.chessBoardTurnByTurn[Chessboard.turnCounter][i][j] = Chessboard.chessBoardNew[i][j];
+                    }
+                }
             } else {
                 playerBlack.move();
-            }
-            //*****PLAYER MOVE******
-
-            //saving previous move to chessBoardTurnByTurn
-
-            for(int i = 0; i<9; i++){
-                for(int j = 0; j<9; j++){
-                    Chessboard.chessBoardTurnByTurn[Chessboard.turnCounter][i][j] = Chessboard.chessBoardNew[i][j];
+                Chessboard.turnCounter ++;
+                //saving previous move to chessBoardTurnByTurn
+                for(int i = 0; i<9; i++){
+                    for(int j = 0; j<9; j++){
+                        Chessboard.chessBoardTurnByTurn[Chessboard.turnCounter][i][j] = Chessboard.chessBoardNew[i][j];
+                    }
                 }
-            }
 
+            }
+            //+++++PLAYER MOVE++++++
 
             //display the new board and pieces taken
             Chessboard.displayBoard();
             System.out.println("Player Black's Victims: " + playerBlack.whitePiecesTaken);
             System.out.println("Player White's Victims: " + playerWhite.blackPiecesTaken);
-
+            System.out.println("*************DEBUG*****************" +"\r\n"
+                    +"previous position e7: " +Chessboard.chessBoardTurnByTurn[Chessboard.turnCounter -1][2][5] +"\r\n"
+                    +"*************DEBUG*****************"
+            );
+            //Checks game states
+            Chessboard.checkState();
         }
     }
 }
