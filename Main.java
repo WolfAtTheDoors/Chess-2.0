@@ -2,13 +2,12 @@
  * Chess 2.0 is a chess game. It is a work in progress.
  * @author: Gisela Wolf
  * @version: 0.5
- * @since: 15.02.2023
+ * @since: 9.03.2023
  * TODO:
  * - State based actions (check, checkmate, risk, remis and castle legality)
  * - threatening/risking the king
  * - moves in check, moves to protecc
  * - castling (space between empty and not threatened, king unchecked)
- * - user proof move inputs (setMove)
  */
 
 import java.util.ArrayList;
@@ -164,6 +163,7 @@ class Player extends Chessboard {
     ArrayList<String> whitePiecesTaken = new ArrayList<>();
     String originString;
     private String move = "a1h8";
+    boolean moveFormatIsCorrect = false;
     public String getMove() {
         return move;
     }
@@ -172,16 +172,15 @@ class Player extends Chessboard {
         String rowString = "12345678";
 
         if(
-           (columnsString.contains(String.valueOf(getMove().charAt(0))))
-        && (rowString.contains(String.valueOf(getMove().charAt(1))))
-        && (columnsString.contains(String.valueOf(getMove().charAt(2))))
-        && (rowString.contains(String.valueOf(getMove().charAt(3))))
-        && getMove().length() == 4
+           (columnsString.contains(String.valueOf(move.charAt(0))))
+        && (rowString.contains(String.valueOf(move.charAt(1))))
+        && (columnsString.contains(String.valueOf(move.charAt(2))))
+        && (rowString.contains(String.valueOf(move.charAt(3))))
+        && move.length() == 4
         ){
         this.move = move;
-}else{
-            System.out.println("I don't understand what you are saying.");
-        }
+        moveFormatIsCorrect = true;
+}
     }
 
     //constructor
@@ -719,7 +718,11 @@ class Player extends Chessboard {
             }
 
             //parse move legality
-            if (!moveIsLegal) {
+
+            if(!moveFormatIsCorrect){
+                System.out.println("I don't understand what you are saying.");
+            }
+            else if (!moveIsLegal) {
                 System.out.println("I can't let you do that.");
             }
             else if(!pathIsClear) {
@@ -737,7 +740,7 @@ class Player extends Chessboard {
              else {
                 //move is legal:
                 //case: there was an enemy piece there = piece gets taken
-                if((pieceTaken.charAt(0) == 'B' && isWhiteTurn) || (pieceTaken.charAt(0) == 'W' && !isWhiteTurn)){
+                if(((pieceTaken.charAt(0) == 'B' && isWhiteTurn) || (pieceTaken.charAt(0) == 'W' && !isWhiteTurn))){
                     if(pieceTaken.charAt(0) == 'B'){
                         blackPiecesTaken.add(pieceTaken);
                     }else if(pieceTaken.charAt(0) == 'W'){
