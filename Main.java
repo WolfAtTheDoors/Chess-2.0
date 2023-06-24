@@ -1,13 +1,12 @@
 /**
  * Chess 2.0 is a chess game. It is a work in progress.
  * @author: Gisela Wolf
- * @version: 0.5
+ * @version: 0.8
  * @since: 9.03.2023
  * TODO:
- * - State based actions (check, checkmate, risk, remis and castle legality)
- * - threatening/risking the king
- * - moves in check, moves to protecc
- * - castling (space between empty and not threatened, king unchecked)
+ * - State based actions (check, checkmate, risk and castle legality)
+ * - moves in check, moves to protect
+ * - remis
  */
 
 import java.util.ArrayList;
@@ -32,8 +31,7 @@ class Chessboard {
     };
 
     static String[][] chessBoardNew = chessBoardOrigin;
-    static String[][][] chessBoardTurnByTurn = new String[100][10][10];
-
+    static String[][][] chessBoardTurnByTurn = new String[900][10][10];
 
     //constructor
     public void chessboard() {
@@ -43,9 +41,12 @@ class Chessboard {
     public static void checkState() {
         boolean blackKingFound = false;
         boolean whiteKingFound = false;
+        int[] whiteKingCoordinates = {0, 0};
+        int[] blackKingCoordinates = {0, 0};
+        boolean blackKingChecked = false;
+        boolean whiteKingChecked = false;
 
-        //Check and Checkmate
-        //Is the King alive?
+        //Is the King alive? Long live the king
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 if (chessBoardNew[i][j].equals("BK")) {
@@ -68,8 +69,34 @@ class Chessboard {
             whiteKingFound = false;
         }
 
+        //Is the king checked?
+        //white king checked
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (chessBoardNew[i][j].equals("WK")) {
+                    whiteKingCoordinates[0] = i;
+                    whiteKingCoordinates[1] = j;
+                }
+            }
+        }
 
-        //Is the king checked? Is he in checkmate?
+        chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1]]
+
+
+        //black king checked
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (chessBoardNew[i][j].equals("BK")) {
+                    blackKingCoordinates[0] = i;
+                    blackKingCoordinates[1] = j;
+                }
+            }
+        }
+
+
+
+
+        //Checkmate. Is the checked king in checkmate?
 
         //Remis
         //Are there no legal moves left?
@@ -157,7 +184,6 @@ class Chessboard {
 
     }
 }
-
 class Player extends Chessboard {
     ArrayList<String> blackPiecesTaken = new ArrayList<>();
     ArrayList<String> whitePiecesTaken = new ArrayList<>();
@@ -250,9 +276,9 @@ class Player extends Chessboard {
             }
 
             //parse if there is a piece and what color
-                    piece = Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]];
-                    pieceTaken = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]];
-                    if (!Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]].equals("00")) {
+            piece = Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]];
+            pieceTaken = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]];
+            if (!Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]].equals("00")) {
                         isPiece = true;
                         if (piece.charAt(0) == 'B') {
                             isBlack = true;
@@ -260,7 +286,7 @@ class Player extends Chessboard {
                             isWhite = true;
                         }
                     }
-                    destinationChar = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0);
+            destinationChar = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0);
 
             //move doesn't cross other pieces
             for (int i = 1; i < moveCoordinateAbsolute -1; i++) {
@@ -718,7 +744,6 @@ class Player extends Chessboard {
             }
 
             //parse move legality
-
             if(!moveFormatIsCorrect){
                 System.out.println("I don't understand what you are saying.");
             }
