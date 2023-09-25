@@ -5,8 +5,9 @@
  * @since: 9.03.2023
  * TODO:
  * - State based actions (check, checkmate, risk and castle legality)
- * - moves in check, moves to protect
+ * - moves in check, moves to protect, move when the enemy king is checked
  * - remis
+ * - edge cases: King checked by a pawn over two steps (pawn has not moved)
  */
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ class Chessboard {
     public static boolean isWhiteTurn;
     public static boolean blackKingLives = true;
     public static boolean whiteKingLives = true;
+    public static boolean blackKingChecked = false;
+    public static boolean whiteKingChecked = false;
     public static int turnCounter = 1;
     final static String[][] chessBoardOrigin = {
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
@@ -23,8 +26,8 @@ class Chessboard {
             {"7", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "7"},
             {"6", "00", "00", "00", "00", "00", "00", "00", "00", "6"},
             {"5", "00", "00", "00", "00", "00", "00", "00", "00", "5"},
-            {"4", "00", "00", "00", "00", "00", "00", "00", "00", "4"},
-            {"3", "00", "00", "00", "00", "00", "00", "00", "00", "3"},
+            {"4", "00", "00", "00", "00", "00", "BP", "00", "00", "4"},
+            {"3", "00", "00", "00", "00", "00", "BP", "00", "00", "3"},
             {"2", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "2"},
             {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR", "1"},
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
@@ -43,8 +46,8 @@ class Chessboard {
         boolean whiteKingFound = false;
         int[] whiteKingCoordinates = {0, 0};
         int[] blackKingCoordinates = {0, 0};
-        boolean blackKingChecked = false;
-        boolean whiteKingChecked = false;
+
+
 
         //Is the King alive? Long live the king
         for (int i = 0; i < 9; i++) {
@@ -71,16 +74,38 @@ class Chessboard {
 
         //Is the king checked?
         //white king checked
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (chessBoardNew[i][j].equals("WK")) {
-                    whiteKingCoordinates[0] = i;
-                    whiteKingCoordinates[1] = j;
-                }
+if(whiteKingLives) {
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            if (chessBoardNew[i][j].equals("WK")) {
+                whiteKingCoordinates[0] = i;
+                whiteKingCoordinates[1] = j;
             }
         }
+    }
 
-        chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1]]
+    //chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1]]
+    //this only works if the white king lives
+
+    //Is there a pawn?)
+    if ((chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] - 1].equals("BP")
+       || chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] + 1].equals("BP"))
+    ) {
+        System.out.println("A pawn has the white king by the throat. Check!");
+        whiteKingChecked = true;
+    }
+}
+
+        System.out.println(
+                "*************DEBUG*****************" +"\r\n"
+                +"White king Pawn check 1: " +Chessboard.chessBoardNew[whiteKingCoordinates[0] -1][whiteKingCoordinates[1]+1] +"\r\n"
+                +"White king Pawn check 2: " +Chessboard.chessBoardNew[whiteKingCoordinates[0] -1][whiteKingCoordinates[1]-1] +"\r\n"
+                +"*************DEBUG*****************"
+        );
+
+    //    if(Chessboard.isWhiteTurn && whiteKingChecked || !Chessboard.isWhiteTurn && blackKingChecked){
+    //        System.out.println("Your king is checked. You save the king!");
+    //    }
 
 
         //black king checked
@@ -92,8 +117,6 @@ class Chessboard {
                 }
             }
         }
-
-
 
 
         //Checkmate. Is the checked king in checkmate?
@@ -171,7 +194,6 @@ class Chessboard {
                     }
                 }
         }
-
     }
 
     //Display
@@ -206,7 +228,7 @@ class Player extends Chessboard {
         ){
         this.move = move;
         moveFormatIsCorrect = true;
-}
+        }
     }
 
     //constructor
@@ -233,7 +255,7 @@ class Player extends Chessboard {
         boolean whiteQueensRookHasMoved = false;
         boolean whiteKingsRookHasMoved = false;
         boolean pathIsClear = true;
-        boolean moveIsLegal = true;
+        boolean moveIsLegal = true;  //Remember: Any move might be illegal in check!
         boolean babaIsYou;
 
         while(true) {
@@ -401,7 +423,6 @@ class Player extends Chessboard {
 
                     }
                 }
-
                 case "BP" -> {
                     moveIsLegal = false;
                     //moves down the board by one
@@ -458,7 +479,6 @@ class Player extends Chessboard {
 
                     }
                 }
-
                 case "WR" -> {
                     moveIsLegal = false;
                     //moves in a straight line, vertical and horizontal
@@ -483,7 +503,6 @@ class Player extends Chessboard {
                     }
                     //cannot skip
                 }
-
                 case "BR" -> {
                     moveIsLegal = false;
                     //moves in a straight line, vertical and horizontal
@@ -504,7 +523,6 @@ class Player extends Chessboard {
 
                     //can castle long or short
                 }
-
                 case "BN", "WN" -> {
                     moveIsLegal = false;
                     //Moves by 2/1
@@ -541,7 +559,6 @@ class Player extends Chessboard {
                     }
                     //can skip other pieces (and thus move on turn 1)
                 }
-
                 case "BB", "WB" -> {
                     moveIsLegal = false;
                     //moves diagonally
@@ -562,7 +579,6 @@ class Player extends Chessboard {
                     }
                     //cannot skip other pieces
                 }
-
                 case "BQ", "WQ" -> {
                     moveIsLegal = false;
                     //moves diagonally
@@ -592,7 +608,6 @@ class Player extends Chessboard {
                     }
                     //cannot skip
                 }
-
                 case "BK" -> {
                     moveIsLegal = false;
                     //moves by one in any direction
@@ -667,7 +682,6 @@ class Player extends Chessboard {
 
 
                 }
-
                 case "WK" -> {
                     moveIsLegal = false;
                     //moves by one in any direction
@@ -743,6 +757,8 @@ class Player extends Chessboard {
                 }
             }
 
+            //individual pieces movesets in check. If the current king is checked, only moves that end the check are legal
+
             //parse move legality
             if(!moveFormatIsCorrect){
                 System.out.println("I don't understand what you are saying.");
@@ -762,8 +778,12 @@ class Player extends Chessboard {
             else if ((destinationChar == 'W' && Chessboard.isWhiteTurn) || (destinationChar == 'B' && !Chessboard.isWhiteTurn)) {
                 System.out.println("That space is taken.");
             }
+
+            //your king is checked
+
+
+            //move is legal:
              else {
-                //move is legal:
                 //case: there was an enemy piece there = piece gets taken
                 if(((pieceTaken.charAt(0) == 'B' && isWhiteTurn) || (pieceTaken.charAt(0) == 'W' && !isWhiteTurn))){
                     if(pieceTaken.charAt(0) == 'B'){
@@ -829,20 +849,19 @@ public class Main {
                         Chessboard.chessBoardTurnByTurn[Chessboard.turnCounter][i][j] = Chessboard.chessBoardNew[i][j];
                     }
                 }
-
             }
-            //+++++PLAYER MOVE++++++
 
+            //+++++PLAYER MOVE++++++
             //display the new board and pieces taken
             Chessboard.displayBoard();
             System.out.println("Player Black's Victims: " + playerBlack.whitePiecesTaken);
             System.out.println("Player White's Victims: " + playerWhite.blackPiecesTaken);
-            System.out.println("*************DEBUG*****************" +"\r\n"
-                    +"previous position e7: " +Chessboard.chessBoardTurnByTurn[Chessboard.turnCounter -1][2][5] +"\r\n"
-                    +"*************DEBUG*****************"
-            );
             //Checks game states
             Chessboard.checkState();
         }
     }
 }
+
+
+
+
