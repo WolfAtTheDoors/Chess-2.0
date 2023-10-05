@@ -8,7 +8,8 @@
  * - moves in check, moves to protect, move when the enemy king is checked
  * - remis
  * - edge cases: King checked by a pawn over two steps (pawn has not moved)
- */
+ * - colored Strings (ANSI escape?)
+ * */
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,18 +21,32 @@ class Chessboard {
     public static boolean blackKingChecked = false;
     public static boolean whiteKingChecked = false;
     public static int turnCounter = 1;
+
+    //colored strings
+    public static final String ANSI_WHITE = "\u001B[37m";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+
+    static String coloredString(String s, String c){
+        return c + s + ANSI_RESET;
+    }
+    static String WP =  coloredString("WP", ANSI_WHITE);
+    static String BP =  coloredString("BP", ANSI_BLACK);
+
+
     final static String[][] chessBoardOrigin = {
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
             {"8", "BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR", "8"},
             {"7", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "7"},
-            {"6", "00", "00", "00", "00", "00", "00", "00", "00", "6"},
-            {"5", "00", "00", "00", "00", "00", "00", "00", "00", "5"},
-            {"4", "00", "00", "00", "00", "00", "BP", "00", "00", "4"},
-            {"3", "00", "00", "00", "00", "00", "BP", "00", "00", "3"},
+            {"6", "__", "__", "__", "__", "__", "__", "__", "__", "6"},
+            {"5", "__", "__", "__", "__", "__", "__", "__", "__", "5"},
+            {"4", "__", "__", "__", "__", "__", "__", "__", "__", "4"},
+            {"3", "__", "__", "__", "__", "__", "__", "__", "__", "3"},
             {"2", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "2"},
             {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR", "1"},
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
     };
+//use coloredString?
 
     static String[][] chessBoardNew = chessBoardOrigin;
     static String[][][] chessBoardTurnByTurn = new String[900][10][10];
@@ -44,10 +59,6 @@ class Chessboard {
     public static void checkState() {
         boolean blackKingFound = false;
         boolean whiteKingFound = false;
-        int[] whiteKingCoordinates = {0, 0};
-        int[] blackKingCoordinates = {0, 0};
-
-
 
         //Is the King alive? Long live the king
         for (int i = 0; i < 9; i++) {
@@ -72,54 +83,9 @@ class Chessboard {
             whiteKingFound = false;
         }
 
-        //Is the king checked?
-        //white king checked
-if(whiteKingLives) {
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
-            if (chessBoardNew[i][j].equals("WK")) {
-                whiteKingCoordinates[0] = i;
-                whiteKingCoordinates[1] = j;
-            }
-        }
-    }
-
-    //chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1]]
-    //this only works if the white king lives
-
-    //Is there a pawn?)
-    if ((chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] - 1].equals("BP")
-       || chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] + 1].equals("BP"))
-    ) {
-        System.out.println("A pawn has the white king by the throat. Check!");
-        whiteKingChecked = true;
-    }
-}
-
-        System.out.println(
-                "*************DEBUG*****************" +"\r\n"
-                +"White king Pawn check 1: " +Chessboard.chessBoardNew[whiteKingCoordinates[0] -1][whiteKingCoordinates[1]+1] +"\r\n"
-                +"White king Pawn check 2: " +Chessboard.chessBoardNew[whiteKingCoordinates[0] -1][whiteKingCoordinates[1]-1] +"\r\n"
-                +"*************DEBUG*****************"
-        );
-
-    //    if(Chessboard.isWhiteTurn && whiteKingChecked || !Chessboard.isWhiteTurn && blackKingChecked){
-    //        System.out.println("Your king is checked. You save the king!");
-    //    }
-
-
-        //black king checked
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (chessBoardNew[i][j].equals("BK")) {
-                    blackKingCoordinates[0] = i;
-                    blackKingCoordinates[1] = j;
-                }
-            }
-        }
-
-
-        //Checkmate. Is the checked king in checkmate?
+        //Is the white king checked?
+        checkIsWhiteChecked();
+        //Is the black King checked?
 
         //Remis
         //Are there no legal moves left?
@@ -133,8 +99,8 @@ if(whiteKingLives) {
                 String pawnsChoice;
                 Scanner in = new Scanner(System.in);
                 System.out.println("Your Pawn has achieved great things.");
-                System.out.println("She may now choose who she wants to be:" +"\r\n"
-                        +"(R) Rook, (K) Knight, (B) Bishop (Q) Queen");
+                System.out.println("She may now choose who she wants to be:" + "\r\n"
+                        + "(R) Rook, (K) Knight, (B) Bishop (Q) Queen");
                 pawnsChoice = in.nextLine();
 
                 switch (pawnsChoice) {
@@ -163,49 +129,112 @@ if(whiteKingLives) {
         }
         //Black
         for (int i = 1; i < 8; i++) {
-                if (chessBoardNew[8][i].equals("BP")) {
-                    String pawnsChoice;
-                    Scanner in = new Scanner(System.in);
-                    System.out.println("                     Your Pawn has achieved great things.");
-                    System.out.println("She may now choose who she wants to be: (R) Rook, (K) Knight, (B) Bishop (Q) Queen");
-                    pawnsChoice = in.nextLine();
+            if (chessBoardNew[8][i].equals("BP")) {
+                String pawnsChoice;
+                Scanner in = new Scanner(System.in);
+                System.out.println("                     Your Pawn has achieved great things.");
+                System.out.println("She may now choose who she wants to be: (R) Rook, (K) Knight, (B) Bishop (Q) Queen");
+                pawnsChoice = in.nextLine();
 
-                    switch (pawnsChoice) {
-                        case "R", "r" -> {
-                            chessBoardNew[8][i] = "BR";
-                            System.out.println("A Rook She shall be.");
-                            Chessboard.displayBoard();
-                        }
-                        case "K", "k" -> {
-                            chessBoardNew[8][i] = "BN";
-                            System.out.println("A Knight She shall be.");
-                            Chessboard.displayBoard();
-                        }
-                        case "B", "b" -> {
-                            chessBoardNew[8][i] = "BB";
-                            System.out.println("A Bishop She shall be.");
-                            Chessboard.displayBoard();
-                        }
-                        case "Q", "q" -> {
-                            chessBoardNew[8][i] = "BQ";
-                            System.out.println("A Queen She shall be.");
-                            Chessboard.displayBoard();
-                        }
+                switch (pawnsChoice) {
+                    case "R", "r" -> {
+                        chessBoardNew[8][i] = "BR";
+                        System.out.println("A Rook She shall be.");
+                        Chessboard.displayBoard();
+                    }
+                    case "K", "k" -> {
+                        chessBoardNew[8][i] = "BN";
+                        System.out.println("A Knight She shall be.");
+                        Chessboard.displayBoard();
+                    }
+                    case "B", "b" -> {
+                        chessBoardNew[8][i] = "BB";
+                        System.out.println("A Bishop She shall be.");
+                        Chessboard.displayBoard();
+                    }
+                    case "Q", "q" -> {
+                        chessBoardNew[8][i] = "BQ";
+                        System.out.println("A Queen She shall be.");
+                        Chessboard.displayBoard();
                     }
                 }
+            }
         }
     }
 
-    //Display
-    public static void displayBoard() {
+    public static boolean checkIsWhiteChecked() {
+        int[] whiteKingCoordinates = {0, 0};
 
-          for (int i = 0; i < 10; i++) {
-            System.out.println(Arrays.deepToString(chessBoardNew[i]));
-          //  System.out.println("\r\n");
+        //Is the king checked?
+        //white king checked
+        if (whiteKingLives) {
+            for (int i = 0; i < 9; i++) {
+                for (int j = 0; j < 9; j++) {
+                    if (chessBoardNew[i][j].equals("WK")) {
+                        whiteKingCoordinates[0] = i;
+                        whiteKingCoordinates[1] = j;
+                    }
+                }
+            }
+
+            //chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1]]
+            //this only works if the white king lives
+
+            //Is there a pawn?)
+            if ((chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] - 1].equals("BP")
+                    || chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] + 1].equals("BP"))
+            ) {
+                System.out.println("A pawn has the white king by the throat. Check!");
+                whiteKingChecked = true;
+            }
         }
 
+        System.out.println(
+                "*************DEBUG*****************" + "\r\n"
+                        + "White king Pawn check 1: " + Chessboard.chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] + 1] + "\r\n"
+                        + "White king Pawn check 2: " + Chessboard.chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] - 1] + "\r\n"
+                        + "*************DEBUG*****************"
+        );
+
+        //    if(Chessboard.isWhiteTurn && whiteKingChecked || !Chessboard.isWhiteTurn && blackKingChecked){
+        //        System.out.println("Your king is checked. You save the king!");
+        //    }
+
+
+return whiteKingChecked;
     }
+
+    public static boolean checkIsBlackChecked() {
+        int[] blackKingCoordinates = {0, 0};
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (chessBoardNew[i][j].equals("BK")) {
+                    blackKingCoordinates[0] = i;
+                    blackKingCoordinates[1] = j;
+                }
+            }
+        }
+
+        return blackKingChecked;
+    }
+
+
+        //Display
+        public static void displayBoard() {
+
+            for (int i = 0; i < 10; i++) {
+                System.out.println(Arrays.deepToString(chessBoardNew[i]));
+                //  System.out.println("\r\n");
+            }
+
+        }
+        //Checkmate. Is the checked king in checkmate?
+
+
 }
+
+
+
 class Player extends Chessboard {
     ArrayList<String> blackPiecesTaken = new ArrayList<>();
     ArrayList<String> whitePiecesTaken = new ArrayList<>();
@@ -300,7 +329,7 @@ class Player extends Chessboard {
             //parse if there is a piece and what color
             piece = Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]];
             pieceTaken = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]];
-            if (!Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]].equals("00")) {
+            if (!Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]].equals("__")) {
                         isPiece = true;
                         if (piece.charAt(0) == 'B') {
                             isBlack = true;
@@ -313,49 +342,49 @@ class Player extends Chessboard {
             //move doesn't cross other pieces
             for (int i = 1; i < moveCoordinateAbsolute -1; i++) {
             if (moveCoordinates[0] > 0 && moveCoordinates[1] > 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1] + i].equals("00"))) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1] + i].equals("__"))) {
                     pathIsClear = false;
                 //    break;
                 }
             }
             if (moveCoordinates[0] > 0 && moveCoordinates[1] == 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1]].equals("00"))) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1]].equals("__"))) {
                     pathIsClear = false;
                 //    break;
                 }
             }
             if (moveCoordinates[0] < 0 && moveCoordinates[1] > 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1] + i].equals("00"))) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1] + i].equals("__"))) {
                     pathIsClear = false;
                 //    break;
                 }
             }
             if (moveCoordinates[0] < 0 && moveCoordinates[1] == 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1]].equals("00"))) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1]].equals("__"))) {
                     pathIsClear = false;
                 //    break;
                 }
             }
             if (moveCoordinates[0] < 0 && moveCoordinates[1] < 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1] - i].equals("00"))) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1] - i].equals("__"))) {
                     pathIsClear = false;
                 //    break;
                 }
             }
             if (moveCoordinates[0] == 0 && moveCoordinates[1] < 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1] - i].equals("00"))) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1] - i].equals("__"))) {
                     pathIsClear = false;
                 //    break;
                 }
             }
             if (moveCoordinates[0] > 0 && moveCoordinates[1] < 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1] - i].equals("00"))) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1] - i].equals("__"))) {
                     pathIsClear = false;
                 //    break;
                 }
             }
             if (moveCoordinates[0] > 0 && moveCoordinates[1] == 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1]].equals("00"))) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1]].equals("__"))) {
                     pathIsClear = false;
                 //  break;
                 }
@@ -372,7 +401,7 @@ class Player extends Chessboard {
                     moveIsLegal = false;
                     //Moves up the board by one if unblocked
                     if ((moveCoordinates[0] == -1 && moveCoordinates[1] == 0)
-                      && ((Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0)) == '0'))
+                      && ((Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0)) == '_'))
                     {
                         moveIsLegal = true;
                         break;
@@ -404,7 +433,7 @@ class Player extends Chessboard {
 
                     ){
                         moveIsLegal = true;
-                        chessBoardNew[originCoordinates[0]][originCoordinates[1] -1] = "00";
+                        chessBoardNew[originCoordinates[0]][originCoordinates[1] -1] = "__";
                         blackPiecesTaken.add("BP");
 
                     }
@@ -418,7 +447,7 @@ class Player extends Chessboard {
 
                     ){
                         moveIsLegal = true;
-                        chessBoardNew[originCoordinates[0]][originCoordinates[1] +1] = "00";
+                        chessBoardNew[originCoordinates[0]][originCoordinates[1] +1] = "__";
                         blackPiecesTaken.add("BP");
 
                     }
@@ -427,7 +456,7 @@ class Player extends Chessboard {
                     moveIsLegal = false;
                     //moves down the board by one
                     if ((moveCoordinates[0] == +1 && moveCoordinates[1] == 0)
-                            && ((Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0)) == '0'))
+                            && ((Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0)) == '_'))
                     {
                         moveIsLegal = true;
                         break;
@@ -460,7 +489,7 @@ class Player extends Chessboard {
 
                     ){
                         moveIsLegal = true;
-                        chessBoardNew[originCoordinates[0]][originCoordinates[1] -1] = "00";
+                        chessBoardNew[originCoordinates[0]][originCoordinates[1] -1] = "__";
                         whitePiecesTaken.add("WP");
 
                     }
@@ -474,7 +503,7 @@ class Player extends Chessboard {
 
                     ){
                         moveIsLegal = true;
-                        chessBoardNew[originCoordinates[0]][originCoordinates[1] +1] = "00";
+                        chessBoardNew[originCoordinates[0]][originCoordinates[1] +1] = "__";
                         whitePiecesTaken.add("WP");
 
                     }
@@ -660,8 +689,8 @@ class Player extends Chessboard {
                     //castle Kingside
                     if ((moveCoordinates[0] == 0 && moveCoordinates[1] == 2) && !blackKingHasMoved && !blackKingsRookHasMoved) {
                         moveIsLegal = true;
-                        Chessboard.chessBoardNew[8][8] = "00";
-                        Chessboard.chessBoardNew[8][5] = "00";
+                        Chessboard.chessBoardNew[8][8] = "__";
+                        Chessboard.chessBoardNew[8][5] = "__";
                         Chessboard.chessBoardNew[8][7] = "WK";
                         Chessboard.chessBoardNew[8][6] = "WR";
                         blackKingHasMoved = true;
@@ -672,8 +701,8 @@ class Player extends Chessboard {
                     //castle Queenside
                     if ((moveCoordinates[0] == 0 && moveCoordinates[1] == -3) && !blackKingHasMoved && !blackQueensRookHasMoved) {
                         moveIsLegal = true;
-                        Chessboard.chessBoardNew[8][1] = "00";
-                        Chessboard.chessBoardNew[8][5] = "00";
+                        Chessboard.chessBoardNew[8][1] = "__";
+                        Chessboard.chessBoardNew[8][5] = "__";
                         Chessboard.chessBoardNew[8][2] = "WK";
                         Chessboard.chessBoardNew[8][3] = "WR";
                         blackKingHasMoved = true;
@@ -733,8 +762,8 @@ class Player extends Chessboard {
                     //castle Kingside
                     if ((moveCoordinates[0] == 0 && moveCoordinates[1] == 2) && !whiteKingHasMoved && !whiteKingsRookHasMoved) {
                         moveIsLegal = true;
-                        Chessboard.chessBoardNew[8][8] = "00";
-                        Chessboard.chessBoardNew[8][5] = "00";
+                        Chessboard.chessBoardNew[8][8] = "__";
+                        Chessboard.chessBoardNew[8][5] = "__";
                         Chessboard.chessBoardNew[8][7] = "WK";
                         Chessboard.chessBoardNew[8][6] = "WR";
                         whiteKingHasMoved = true;
@@ -745,8 +774,8 @@ class Player extends Chessboard {
                     //castle Queenside
                     if ((moveCoordinates[0] == 0 && moveCoordinates[1] == -3) && !whiteKingHasMoved && !whiteQueensRookHasMoved) {
                         moveIsLegal = true;
-                        Chessboard.chessBoardNew[8][1] = "00";
-                        Chessboard.chessBoardNew[8][5] = "00";
+                        Chessboard.chessBoardNew[8][1] = "__";
+                        Chessboard.chessBoardNew[8][5] = "__";
                         Chessboard.chessBoardNew[8][2] = "WK";
                         Chessboard.chessBoardNew[8][3] = "WR";
                         whiteKingHasMoved = true;
@@ -793,7 +822,7 @@ class Player extends Chessboard {
                     }
                 }
                 //delete piece from destination (=00)
-                Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]] = "00";
+                Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1]] = "__";
                 //insert piece into destination K K(=BP)
                 Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]] = piece;
                 break;
