@@ -9,6 +9,7 @@
  * - remis
  * - edge cases: King checked by a pawn over two steps (pawn has not moved)
  * - colored Strings (ANSI escape?)
+ * - error in diagonal moves
  * */
 
 import java.util.ArrayList;
@@ -26,13 +27,11 @@ class Chessboard {
     public static final String ANSI_WHITE = "\u001B[37m";
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
-
     static String coloredString(String s, String c){
         return c + s + ANSI_RESET;
     }
     static String WP =  coloredString("WP", ANSI_WHITE);
-    static String BP =  coloredString("BP", ANSI_BLACK);
-
+    static String __ =  coloredString("__", ANSI_BLACK);
 
     final static String[][] chessBoardOrigin = {
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
@@ -46,7 +45,6 @@ class Chessboard {
             {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR", "1"},
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
     };
-//use coloredString?
 
     static String[][] chessBoardNew = chessBoardOrigin;
     static String[][][] chessBoardTurnByTurn = new String[900][10][10];
@@ -86,6 +84,10 @@ class Chessboard {
         //Is the white king checked?
         checkIsWhiteChecked();
         //Is the black King checked?
+        checkIsBlackChecked();
+
+        //Checkmate. Is the checked king in checkmate?
+
 
         //Remis
         //Are there no legal moves left?
@@ -189,13 +191,6 @@ class Chessboard {
             }
         }
 
-        System.out.println(
-                "*************DEBUG*****************" + "\r\n"
-                        + "White king Pawn check 1: " + Chessboard.chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] + 1] + "\r\n"
-                        + "White king Pawn check 2: " + Chessboard.chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] - 1] + "\r\n"
-                        + "*************DEBUG*****************"
-        );
-
         //    if(Chessboard.isWhiteTurn && whiteKingChecked || !Chessboard.isWhiteTurn && blackKingChecked){
         //        System.out.println("Your king is checked. You save the king!");
         //    }
@@ -218,22 +213,16 @@ return whiteKingChecked;
         return blackKingChecked;
     }
 
-
-        //Display
-        public static void displayBoard() {
-
+   //Display
+   public static void displayBoard() {
             for (int i = 0; i < 10; i++) {
                 System.out.println(Arrays.deepToString(chessBoardNew[i]));
                 //  System.out.println("\r\n");
             }
-
         }
-        //Checkmate. Is the checked king in checkmate?
 
 
 }
-
-
 
 class Player extends Chessboard {
     ArrayList<String> blackPiecesTaken = new ArrayList<>();
@@ -241,6 +230,8 @@ class Player extends Chessboard {
     String originString;
     private String move = "a1h8";
     boolean moveFormatIsCorrect = false;
+
+    //Get und Set
     public String getMove() {
         return move;
     }
@@ -263,13 +254,13 @@ class Player extends Chessboard {
     //constructor
     public void player() {
     }
-
+    int moveCoordinateAbsolute = 0;
     //moves
     public void move() {
         int[] originCoordinates = {0, 0};
         int[] destinationCoordinates = {0, 0};
         int[] moveCoordinates = {0, 0};
-        int moveCoordinateAbsolute;
+
         String piece;
         String pieceTaken;
         char destinationChar;
@@ -283,11 +274,11 @@ class Player extends Chessboard {
         boolean blackKingsRookHasMoved = false;
         boolean whiteQueensRookHasMoved = false;
         boolean whiteKingsRookHasMoved = false;
-        boolean pathIsClear = true;
-        boolean moveIsLegal = true;  //Remember: Any move might be illegal in check!
-        boolean babaIsYou;
 
         while(true) {
+            boolean pathIsClear = true;
+            boolean moveIsLegal = true;  //Remember: Any move might be illegal in check!
+            boolean babaIsYou;
             //enter the move in standard format "c2c4"
             System.out.println("  Make your move. Face your fear.");
             Scanner in = new Scanner(System.in);
@@ -313,17 +304,19 @@ class Player extends Chessboard {
             //determine the moveCoordinates and their absolute value
             moveCoordinates[0] = destinationCoordinates[0] - originCoordinates[0];
             moveCoordinates[1] = destinationCoordinates[1] - originCoordinates[1];
+            int absolute = 0;
             if(moveCoordinates[0] > 0){
-                moveCoordinateAbsolute = moveCoordinates[0];
+                absolute = moveCoordinates[0];
             }
-            else{
-                moveCoordinateAbsolute = moveCoordinates[0]*-1;
+            if(moveCoordinates[0] < 0) {
+                absolute = moveCoordinates[0] * -1;
             }
+
             if(moveCoordinates[1] > 0){
-                moveCoordinateAbsolute = moveCoordinates[1];
+                absolute = moveCoordinates[1];
             }
-            else{
-                moveCoordinateAbsolute = moveCoordinates[1]*-1;
+            if(moveCoordinates[1] < 0){
+                absolute = moveCoordinates[1]+-1;
             }
 
             //parse if there is a piece and what color
@@ -339,82 +332,26 @@ class Player extends Chessboard {
                     }
             destinationChar = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0);
 
-            //move doesn't cross other pieces
-            for (int i = 1; i < moveCoordinateAbsolute -1; i++) {
-            if (moveCoordinates[0] > 0 && moveCoordinates[1] > 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1] + i].equals("__"))) {
-                    pathIsClear = false;
-                //    break;
-                }
-            }
-            if (moveCoordinates[0] > 0 && moveCoordinates[1] == 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1]].equals("__"))) {
-                    pathIsClear = false;
-                //    break;
-                }
-            }
-            if (moveCoordinates[0] < 0 && moveCoordinates[1] > 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1] + i].equals("__"))) {
-                    pathIsClear = false;
-                //    break;
-                }
-            }
-            if (moveCoordinates[0] < 0 && moveCoordinates[1] == 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1]].equals("__"))) {
-                    pathIsClear = false;
-                //    break;
-                }
-            }
-            if (moveCoordinates[0] < 0 && moveCoordinates[1] < 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1] - i].equals("__"))) {
-                    pathIsClear = false;
-                //    break;
-                }
-            }
-            if (moveCoordinates[0] == 0 && moveCoordinates[1] < 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1] - i].equals("__"))) {
-                    pathIsClear = false;
-                //    break;
-                }
-            }
-            if (moveCoordinates[0] > 0 && moveCoordinates[1] < 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1] - i].equals("__"))) {
-                    pathIsClear = false;
-                //    break;
-                }
-            }
-            if (moveCoordinates[0] > 0 && moveCoordinates[1] == 0) {
-                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1]].equals("__"))) {
-                    pathIsClear = false;
-                //  break;
-                }
-            }
-        }
-            //except for the knights
-            if(piece.equals("BN") || piece.equals("WN")){
-                pathIsClear = true;
-            }
-
             //individual pieces' movesets. Depending on which piece has been chosen
             switch (piece) {
                 case "WP" -> {
                     moveIsLegal = false;
                     //Moves up the board by one if unblocked
                     if ((moveCoordinates[0] == -1 && moveCoordinates[1] == 0)
-                      && ((Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0)) == '_'))
+                            && ((Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0)) == '_'))
                     {
                         moveIsLegal = true;
                         break;
                     }
                     //or two on the first move
                     if ((originCoordinates[0] == 7)
-                        && (moveCoordinates[0] == -2 && moveCoordinates[1] == 0)) {
+                            && (moveCoordinates[0] == -2 && moveCoordinates[1] == 0)) {
                         moveIsLegal = true;
                     }
 
                     //captures diagonally
                     if((chessBoardNew[originCoordinates[0] -1][originCoordinates[1] -1]).charAt(0) == 'B'
-                      && (moveCoordinates[0] == -1 && moveCoordinates[1] == -1))
+                            && (moveCoordinates[0] == -1 && moveCoordinates[1] == -1))
                     {
                         moveIsLegal = true;
                     }
@@ -426,10 +363,10 @@ class Player extends Chessboard {
 
                     //captures en-passant left
                     if(
-                       destinationCoordinates[0] == 3
-                              && (moveCoordinates[0] == -1 && moveCoordinates[1] == -1)
-                              && chessBoardNew[originCoordinates[0]][originCoordinates[1] -1].equals("BP")
-                              && chessBoardTurnByTurn[turnCounter -1][2][originCoordinates[1] -1].equals("BP")
+                            destinationCoordinates[0] == 3
+                                    && (moveCoordinates[0] == -1 && moveCoordinates[1] == -1)
+                                    && chessBoardNew[originCoordinates[0]][originCoordinates[1] -1].equals("BP")
+                                    && chessBoardTurnByTurn[turnCounter -1][2][originCoordinates[1] -1].equals("BP")
 
                     ){
                         moveIsLegal = true;
@@ -440,10 +377,10 @@ class Player extends Chessboard {
 
                     //captures en-passant right
                     if(
-                      destinationCoordinates[0] == 3
-                            && (moveCoordinates[0] == -1 && moveCoordinates[1] == +1)
-                            && chessBoardNew[originCoordinates[0]][originCoordinates[1] +1].equals("BP")
-                            && chessBoardTurnByTurn[turnCounter -1][2][originCoordinates[1] +1].equals("BP")
+                            destinationCoordinates[0] == 3
+                                    && (moveCoordinates[0] == -1 && moveCoordinates[1] == +1)
+                                    && chessBoardNew[originCoordinates[0]][originCoordinates[1] +1].equals("BP")
+                                    && chessBoardTurnByTurn[turnCounter -1][2][originCoordinates[1] +1].equals("BP")
 
                     ){
                         moveIsLegal = true;
@@ -611,29 +548,31 @@ class Player extends Chessboard {
                 case "BQ", "WQ" -> {
                     moveIsLegal = false;
                     //moves diagonally
-                    if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    //moves in a straight line, vertical and horizontal
-                    if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
-                        moveIsLegal = true;
+                    if(moveCoordinates[0] == moveCoordinates[1]) {
+                        if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                            moveIsLegal = true;
+                            break;
+                        }
+                        if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                            moveIsLegal = true;
+                            break;
+                        }
+                        if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                            moveIsLegal = true;
+                            break;
+                        }
+                        if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                            moveIsLegal = true;
+                            break;
+                        }
+                        //moves in a straight line, vertical and horizontal
+                        if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
+                            moveIsLegal = true;
+                            break;
+                        }
+                        if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
+                            moveIsLegal = true;
+                        }
                     }
                     //cannot skip
                 }
@@ -786,6 +725,70 @@ class Player extends Chessboard {
                 }
             }
 
+            //move doesn't cross other pieces
+            for (int i = 1; i < absolute; i++) {
+            if (moveCoordinates[0] > 0 && moveCoordinates[1] > 0) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1] + i].equals("__"))) {
+                    pathIsClear = false;
+                //    break;
+                }
+            }
+            if (moveCoordinates[0] > 0 && moveCoordinates[1] == 0) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1]].equals("__"))) {
+                    pathIsClear = false;
+                //    break;
+                }
+            }
+            if (moveCoordinates[0] < 0 && moveCoordinates[1] > 0) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1] + i].equals("__"))) {
+                    pathIsClear = false;
+                //    break;
+                }
+            }
+            if (moveCoordinates[0] < 0 && moveCoordinates[1] == 0) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1]].equals("__"))) {
+                    pathIsClear = false;
+                //    break;
+                }
+            }
+            if (moveCoordinates[0] < 0 && moveCoordinates[1] < 0) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] - i][originCoordinates[1] - i].equals("__"))) {
+                    pathIsClear = false;
+                //    break;
+                }
+            }
+            if (moveCoordinates[0] == 0 && moveCoordinates[1] < 0) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0]][originCoordinates[1] - i].equals("__"))) {
+                    pathIsClear = false;
+                //    break;
+                }
+            }
+            if (moveCoordinates[0] > 0 && moveCoordinates[1] < 0) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1] - i].equals("__"))) {
+                    pathIsClear = false;
+                //    break;
+                }
+            }
+            if (moveCoordinates[0] > 0 && moveCoordinates[1] == 0) {
+                if (!(Chessboard.chessBoardNew[originCoordinates[0] + i][originCoordinates[1]].equals("__"))) {
+                    pathIsClear = false;
+                //  break;
+                }
+            }
+        }
+            //except for the knights
+            if(piece.equals("BN") || piece.equals("WN")){
+                pathIsClear = true;
+            }
+
+            System.out.println(
+                            "*************DEBUG*****************" + "\r\n"
+                            + "Is the path clear? " + pathIsClear + "\r\n"
+                            + "*************DEBUG*****************"
+            );
+
+
+
             //individual pieces movesets in check. If the current king is checked, only moves that end the check are legal
 
             //parse move legality
@@ -809,7 +812,6 @@ class Player extends Chessboard {
             }
 
             //your king is checked
-
 
             //move is legal:
              else {
@@ -880,11 +882,11 @@ public class Main {
                 }
             }
 
-            //+++++PLAYER MOVE++++++
             //display the new board and pieces taken
             Chessboard.displayBoard();
             System.out.println("Player Black's Victims: " + playerBlack.whitePiecesTaken);
             System.out.println("Player White's Victims: " + playerWhite.blackPiecesTaken);
+
             //Checks game states
             Chessboard.checkState();
         }
