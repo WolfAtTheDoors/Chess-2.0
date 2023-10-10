@@ -12,8 +12,6 @@
  * - error in diagonal moves
  * */
 
-import com.sun.source.tree.WhileLoopTree;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -37,23 +35,19 @@ class Chessboard {
 
     final static String[][] chessBoardOrigin = {
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
-            {"8", "__", "BR", "BB", "BQ", "BK", "BB", "BN", "BR", "8"},
-            {"7", "__", "__", "__", "BP", "BP", "BP", "BP", "BP", "7"},
+            {"8", "BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR", "8"},
+            {"7", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "7"},
             {"6", "__", "__", "__", "__", "__", "__", "__", "__", "6"},
-            {"5", "BR", "WK", "__", "__", "__", "__", "__", "BR", "5"},
+            {"5", "__", "__", "__", "__", "__", "__", "__", "__", "5"},
             {"4", "__", "__", "__", "__", "__", "__", "__", "__", "4"},
             {"3", "__", "__", "__", "__", "__", "__", "__", "__", "3"},
-            {"2", "__", "__", "__", "WP", "WP", "WP", "WP", "WP", "2"},
-            {"1", "__", "BR", "WB", "WQ", "__", "WB", "WN", "WR", "1"},
+            {"2", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "2"},
+            {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR", "1"},
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
     };
 
     static String[][] chessBoardNew = chessBoardOrigin;
     static String[][][] chessBoardTurnByTurn = new String[900][10][10];
-
-    //constructor
-    public void chessboard() {
-    }
 
     //Gamestate checks
     public static void checkState() {
@@ -78,9 +72,6 @@ class Chessboard {
         } else if (!whiteKingFound) {
             whiteKingLives = false;
             System.out.println(" And the Winner is: BLACK");
-        } else {
-            blackKingFound = false;
-            whiteKingFound = false;
         }
 
         //Is the white king checked?
@@ -171,8 +162,7 @@ class Chessboard {
         }
     }
 
-    public static boolean checkIsWhiteChecked() {
-
+    public static void checkIsWhiteChecked() {
             int[] whiteKingCoordinates = {0, 0};
 
             //where is the dude?
@@ -193,17 +183,9 @@ class Chessboard {
                 whiteKingChecked = true;
             }
 
-            System.out.println(
-                            "*************DEBUG*****************" + "\r\n"
-                            + "White King Coordinate 0: " + whiteKingCoordinates[0] + "\r\n"
-                            + "White King Coordinate 1: " + whiteKingCoordinates[1] + "\r\n"
-                            + "Who is here?" + chessBoardNew[whiteKingCoordinates[0] - 3][whiteKingCoordinates[1]] + "\r\n"
-                            + "*************DEBUG*****************"
-            );
-
             //Is there a rook?
             //North
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1; i < 8; i++) {
                 if (chessBoardNew[whiteKingCoordinates[0] - i][whiteKingCoordinates[1]].equals("BR")) {
                     System.out.println("A rook has the white king by the throat. Check!");
                     whiteKingChecked = true;
@@ -215,7 +197,7 @@ class Chessboard {
                 }
             }
             //East
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1; i < 8; i++) {
                     if (chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1] + i].equals("BR")) {
                         System.out.println("A rook has the white king by the throat. Check!");
                         whiteKingChecked = true;
@@ -227,7 +209,7 @@ class Chessboard {
                     }
                 }
             //South
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1; i < 8; i++) {
                 if (chessBoardNew[whiteKingCoordinates[0] +i][whiteKingCoordinates[1]].equals("BR")) {
                     System.out.println("A rook has the white king by the throat. Check!");
                     whiteKingChecked = true;
@@ -239,7 +221,7 @@ class Chessboard {
                 }
             }
             //West
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1; i < 8; i++) {
                 if (chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1] - i].equals("BR")) {
                     System.out.println("A rook has the white king by the throat. Check!");
                     whiteKingChecked = true;
@@ -251,10 +233,81 @@ class Chessboard {
                 }
             }
 
-            return whiteKingChecked;
+            //Is there a Knight?
+            if(
+                (whiteKingCoordinates[0] >=2 && whiteKingCoordinates[1] <8 && (chessBoardNew[whiteKingCoordinates[0] -2][whiteKingCoordinates[1] +1].equals("BN")))
+            || (whiteKingCoordinates[0] >=2 && whiteKingCoordinates[1] >=1 && (chessBoardNew[whiteKingCoordinates[0] -2][whiteKingCoordinates[1] -1].equals("BN")))
+            || (whiteKingCoordinates[0] >=1 && whiteKingCoordinates[1] <7 && (chessBoardNew[whiteKingCoordinates[0] -1][whiteKingCoordinates[1] +2].equals("BN")))
+            || (whiteKingCoordinates[0] <8 && whiteKingCoordinates[1] <7 && (chessBoardNew[whiteKingCoordinates[0] +1][whiteKingCoordinates[1] +2].equals("BN")))
+            || (whiteKingCoordinates[0] <7 && whiteKingCoordinates[1] <8 && (chessBoardNew[whiteKingCoordinates[0] +2][whiteKingCoordinates[1] +1].equals("BN")))
+            || (whiteKingCoordinates[0] <7 && whiteKingCoordinates[1] >=1 && (chessBoardNew[whiteKingCoordinates[0] +2][whiteKingCoordinates[1] -1].equals("BN")))
+            || (whiteKingCoordinates[0] <8 && whiteKingCoordinates[1] >=2 && (chessBoardNew[whiteKingCoordinates[0] +1][whiteKingCoordinates[1] -2].equals("BN")))
+            || (whiteKingCoordinates[0] >=1 && whiteKingCoordinates[1] <7 && (chessBoardNew[whiteKingCoordinates[0] -1][whiteKingCoordinates[1] -2].equals("BN")))
+                ){
+                 System.out.println("A knight has the white king by the throat. Check!");
+                 whiteKingChecked = true;
+                }
+
+            //Is there a bishop?
+            //NW
+             for (int i = 1; i < 8; i++) {
+            if (chessBoardNew[whiteKingCoordinates[0] - i][whiteKingCoordinates[1] -i].equals("BB")) {
+                System.out.println("A rook has the white king by the throat. Check!");
+                whiteKingChecked = true;
+            }
+            if (chessBoardNew[whiteKingCoordinates[0] - i][whiteKingCoordinates[1] -i].equals("__")) {
+                continue;
+            } else {
+                break;
+            }
+        }
+            //NE
+            for (int i = 1; i < 8; i++) {
+            if (chessBoardNew[whiteKingCoordinates[0] - i][whiteKingCoordinates[1] +i].equals("BB")) {
+                System.out.println("A rook has the white king by the throat. Check!");
+                whiteKingChecked = true;
+            }
+            if (chessBoardNew[whiteKingCoordinates[0] - i][whiteKingCoordinates[1] +i].equals("__")) {
+                continue;
+            } else {
+                break;
+            }
+        }
+            //SE
+            for (int i = 1; i < 8; i++) {
+            if (chessBoardNew[whiteKingCoordinates[0] +i][whiteKingCoordinates[1] +i].equals("BB")) {
+                System.out.println("A rook has the white king by the throat. Check!");
+                whiteKingChecked = true;
+            }
+            if (chessBoardNew[whiteKingCoordinates[0] +i][whiteKingCoordinates[1] +i].equals("__")) {
+                continue;
+            } else {
+                break;
+            }
+        }
+            //NW
+            for (int i = 1; i < 8; i++) {
+            if (chessBoardNew[whiteKingCoordinates[0] + i][whiteKingCoordinates[1] -i].equals("BB")) {
+                System.out.println("A rook has the white king by the throat. Check!");
+                whiteKingChecked = true;
+            }
+            if (chessBoardNew[whiteKingCoordinates[0] + i][whiteKingCoordinates[1] -i].equals("__")) {
+                continue;
+            } else {
+                break;
+            }
+        }
+
+        System.out.println(
+                         "*************DEBUG*****************" + "\r\n"
+                        + "White King Coordinate 0: " + whiteKingCoordinates[0] + "\r\n"
+                        + "White King Coordinate 1: " + whiteKingCoordinates[1] + "\r\n"
+                        + "Who is here? " + chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1]] + "\r\n"
+                        + "*************DEBUG*****************"
+        );
     }
 
-    public static boolean checkIsBlackChecked() {
+    public static void checkIsBlackChecked() {
         int[] blackKingCoordinates = {0, 0};
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -264,8 +317,6 @@ class Chessboard {
                 }
             }
         }
-
-        return blackKingChecked;
     }
 
    //Display
@@ -305,10 +356,6 @@ class Player extends Chessboard {
         }
     }
 
-    //constructor
-    public void player() {
-    }
-    int moveCoordinateAbsolute = 0;
     //moves
     public void move() {
         int[] originCoordinates = {0, 0};
@@ -386,6 +433,14 @@ class Player extends Chessboard {
             destinationChar = Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0);
 
             //individual pieces' movesets. Depending on which piece has been chosen
+            final boolean b = moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0;
+            final boolean b1 = moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8;
+            final boolean b2 = moveCoordinates[0] == moveCoordinates[1] || moveCoordinates[0] == moveCoordinates[1] * -1;
+            final boolean b3 = (moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0);
+            final boolean b4 = (moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0);
+            final boolean b5 = (moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0);
+            final boolean b6 = (moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0);
+
             switch (piece) {
                 case "WP" -> {
                     moveIsLegal = false;
@@ -409,7 +464,7 @@ class Player extends Chessboard {
                         moveIsLegal = true;
                     }
                     if((chessBoardNew[originCoordinates[0] -1][originCoordinates[1] +1]).charAt(0) == 'B'
-                            && (moveCoordinates[0] == -1 && moveCoordinates[1] == +1))
+                            && (moveCoordinates[0] == -1 && moveCoordinates[1] == 1))
                     {
                         moveIsLegal = true;
                     }
@@ -431,7 +486,7 @@ class Player extends Chessboard {
                     //captures en-passant right
                     if(
                             destinationCoordinates[0] == 3
-                                    && (moveCoordinates[0] == -1 && moveCoordinates[1] == +1)
+                                    && (moveCoordinates[0] == -1 && moveCoordinates[1] == 1)
                                     && chessBoardNew[originCoordinates[0]][originCoordinates[1] +1].equals("BP")
                                     && chessBoardTurnByTurn[turnCounter -1][2][originCoordinates[1] +1].equals("BP")
 
@@ -445,7 +500,7 @@ class Player extends Chessboard {
                 case "BP" -> {
                     moveIsLegal = false;
                     //moves down the board by one
-                    if ((moveCoordinates[0] == +1 && moveCoordinates[1] == 0)
+                    if ((moveCoordinates[0] == 1 && moveCoordinates[1] == 0)
                             && ((Chessboard.chessBoardNew[destinationCoordinates[0]][destinationCoordinates[1]].charAt(0)) == '_'))
                     {
                         moveIsLegal = true;
@@ -460,12 +515,12 @@ class Player extends Chessboard {
 
                     //captures diagonally
                     if((chessBoardNew[originCoordinates[0] +1][originCoordinates[1] -1]).charAt(0) == 'W'
-                            && (moveCoordinates[0] == +1 && moveCoordinates[1] == -1))
+                            && (moveCoordinates[0] == 1 && moveCoordinates[1] == -1))
                     {
                         moveIsLegal = true;
                     }
                     if((chessBoardNew[originCoordinates[0] +1][originCoordinates[1] +1]).charAt(0) == 'W'
-                            && (moveCoordinates[0] == +1 && moveCoordinates[1] == +1))
+                            && (moveCoordinates[0] == 1 && moveCoordinates[1] == 1))
                     {
                         moveIsLegal = true;
                     }
@@ -473,7 +528,7 @@ class Player extends Chessboard {
                     //captures en-passant left
                     if(
                             destinationCoordinates[0] == 6
-                                    && (moveCoordinates[0] == +1 && moveCoordinates[1] == -1)
+                                    && (moveCoordinates[0] == 1 && moveCoordinates[1] == -1)
                                     && chessBoardNew[originCoordinates[0]][originCoordinates[1] -1].equals("WP")
                                     && chessBoardTurnByTurn[turnCounter -1][7][originCoordinates[1] -1].equals("WP")
 
@@ -487,7 +542,7 @@ class Player extends Chessboard {
                     //captures en-passant right
                     if(
                             destinationCoordinates[0] == 6
-                                    && (moveCoordinates[0] == +1 && moveCoordinates[1] == +1)
+                                    && (moveCoordinates[0] == 1 && moveCoordinates[1] == 1)
                                     && chessBoardNew[originCoordinates[0]][originCoordinates[1] +1].equals("WP")
                                     && chessBoardTurnByTurn[turnCounter -1][7][originCoordinates[1] +1].equals("WP")
 
@@ -499,9 +554,10 @@ class Player extends Chessboard {
                     }
                 }
                 case "WR" -> {
+
                     moveIsLegal = false;
                     //moves in a straight line, vertical and horizontal
-                    if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
+                    if (b) {
                         moveIsLegal = true;
                         //check if the rook moved
                         if(originCoordinates[0] == 8 && originCoordinates[1] == 1) {
@@ -511,7 +567,7 @@ class Player extends Chessboard {
                         }
                         break;
                     }
-                    if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
+                    if (b1) {
                         moveIsLegal = true;
                         //check if the rook moved
                         if(originCoordinates[0] == 8 && originCoordinates[1] == 1) {
@@ -525,7 +581,7 @@ class Player extends Chessboard {
                 case "BR" -> {
                     moveIsLegal = false;
                     //moves in a straight line, vertical and horizontal
-                    if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
+                    if (b) {
                         moveIsLegal = true;
                         //check if the rook moved
                         if(originCoordinates[0] == 1 && originCoordinates[1] == 1) {
@@ -535,7 +591,7 @@ class Player extends Chessboard {
                         }
                         break;
                     }
-                    if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
+                    if (b1) {
                         moveIsLegal = true;
 
                     }
@@ -581,20 +637,20 @@ class Player extends Chessboard {
                 case "BB", "WB" -> {
                     moveIsLegal = false;
                     //moves diagonally
-                    if(moveCoordinates[0] == moveCoordinates[1] || moveCoordinates[0] == moveCoordinates[1]*-1 ) {
-                        if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                    if(b2) {
+                        if (b3) {
                             moveIsLegal = true;
                             break;
                         }
-                        if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        if (b4) {
                             moveIsLegal = true;
                             break;
                         }
-                        if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        if (b5) {
                             moveIsLegal = true;
                             break;
                         }
-                        if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                        if (b6) {
                             moveIsLegal = true;
                         }
                     }
@@ -603,29 +659,29 @@ class Player extends Chessboard {
                 case "BQ", "WQ" -> {
                     moveIsLegal = false;
                     //moves diagonally
-                    if(moveCoordinates[0] == moveCoordinates[1] || moveCoordinates[0] == moveCoordinates[1]*-1 ) {
-                        if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                    if(b2) {
+                        if (b3) {
                             moveIsLegal = true;
                             break;
                         }
-                        if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        if (b4) {
                             moveIsLegal = true;
                             break;
                         }
-                        if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                        if (b5) {
                             moveIsLegal = true;
                             break;
                         }
-                        if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                        if (b6) {
                             moveIsLegal = true;
                             break;
                         }
                         //moves in a straight line, vertical and horizontal
-                        if (moveCoordinates[0] < 8 && moveCoordinates[0] > -8 && moveCoordinates[1] == 0) {
+                        if (b) {
                             moveIsLegal = true;
                             break;
                         }
-                        if (moveCoordinates[0] == 0 && moveCoordinates[1] < 8 && moveCoordinates[1] > -8) {
+                        if (b1) {
                             moveIsLegal = true;
                         }
                     }
@@ -836,8 +892,7 @@ class Player extends Chessboard {
                 pathIsClear = true;
             }
 
-
-
+            //your king is checked
             //individual pieces movesets in check. If the current king is checked, only moves that end the check are legal
 
             //parse move legality
@@ -860,9 +915,7 @@ class Player extends Chessboard {
                 System.out.println("That space is taken.");
             }
 
-            //your king is checked
-
-            //move is legal:
+            //if move is legal, execute move and capture:
              else {
                 //case: there was an enemy piece there = piece gets taken
                 if(((pieceTaken.charAt(0) == 'B' && isWhiteTurn) || (pieceTaken.charAt(0) == 'W' && !isWhiteTurn))){

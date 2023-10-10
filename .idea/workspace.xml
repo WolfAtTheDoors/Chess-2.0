@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ff93932a-cd57-405f-9510-6810a7c0c22a" name="Changes" comment="cosmetics">
+    <list default="true" id="ff93932a-cd57-405f-9510-6810a7c0c22a" name="Changes" comment="White king Rook and Pawn check complete">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/Main.java" afterDir="false" />
     </list>
@@ -193,7 +193,14 @@
       <option name="project" value="LOCAL" />
       <updated>1696499977471</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="White king Rook and Pawn check complete">
+      <created>1696926014795</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1696926014795</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -220,6 +227,7 @@
     <MESSAGE value="Capturing en-passant implemented" />
     <MESSAGE value="Userproofing implemented" />
     <MESSAGE value="cosmetics" />
-    <option name="LAST_COMMIT_MESSAGE" value="cosmetics" />
+    <MESSAGE value="White king Rook and Pawn check complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="White king Rook and Pawn check complete" />
   </component>
 </project>
