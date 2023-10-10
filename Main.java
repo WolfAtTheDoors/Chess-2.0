@@ -12,6 +12,8 @@
  * - error in diagonal moves
  * */
 
+import com.sun.source.tree.WhileLoopTree;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -35,14 +37,14 @@ class Chessboard {
 
     final static String[][] chessBoardOrigin = {
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
-            {"8", "BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR", "8"},
-            {"7", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "7"},
+            {"8", "__", "BR", "BB", "BQ", "BK", "BB", "BN", "BR", "8"},
+            {"7", "__", "__", "__", "BP", "BP", "BP", "BP", "BP", "7"},
             {"6", "__", "__", "__", "__", "__", "__", "__", "__", "6"},
-            {"5", "__", "__", "__", "__", "__", "__", "__", "__", "5"},
+            {"5", "BR", "WK", "__", "__", "__", "__", "__", "BR", "5"},
             {"4", "__", "__", "__", "__", "__", "__", "__", "__", "4"},
             {"3", "__", "__", "__", "__", "__", "__", "__", "__", "3"},
-            {"2", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "WP", "2"},
-            {"1", "WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR", "1"},
+            {"2", "__", "__", "__", "WP", "WP", "WP", "WP", "WP", "2"},
+            {"1", "__", "BR", "WB", "WQ", "__", "WB", "WN", "WR", "1"},
             {" ", " a", " b", " c", " d", " e", " f", " g", " h", " "},
     };
 
@@ -82,9 +84,14 @@ class Chessboard {
         }
 
         //Is the white king checked?
-        checkIsWhiteChecked();
+        if(whiteKingLives) {
+            checkIsWhiteChecked();
+        }
         //Is the black King checked?
-        checkIsBlackChecked();
+        if(blackKingLives) {
+            checkIsBlackChecked();
+        }
+        //can both be checked? Can both be checkmate?
 
         //Checkmate. Is the checked king in checkmate?
 
@@ -165,11 +172,10 @@ class Chessboard {
     }
 
     public static boolean checkIsWhiteChecked() {
-        int[] whiteKingCoordinates = {0, 0};
 
-        //Is the king checked?
-        //white king checked
-        if (whiteKingLives) {
+            int[] whiteKingCoordinates = {0, 0};
+
+            //where is the dude?
             for (int i = 0; i < 9; i++) {
                 for (int j = 0; j < 9; j++) {
                     if (chessBoardNew[i][j].equals("WK")) {
@@ -179,24 +185,73 @@ class Chessboard {
                 }
             }
 
-            //chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1]]
-            //this only works if the white king lives
-
-            //Is there a pawn?)
+            //Is there a pawn?
             if ((chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] - 1].equals("BP")
                     || chessBoardNew[whiteKingCoordinates[0] - 1][whiteKingCoordinates[1] + 1].equals("BP"))
             ) {
                 System.out.println("A pawn has the white king by the throat. Check!");
                 whiteKingChecked = true;
             }
-        }
 
-        //    if(Chessboard.isWhiteTurn && whiteKingChecked || !Chessboard.isWhiteTurn && blackKingChecked){
-        //        System.out.println("Your king is checked. You save the king!");
-        //    }
+            System.out.println(
+                            "*************DEBUG*****************" + "\r\n"
+                            + "White King Coordinate 0: " + whiteKingCoordinates[0] + "\r\n"
+                            + "White King Coordinate 1: " + whiteKingCoordinates[1] + "\r\n"
+                            + "Who is here?" + chessBoardNew[whiteKingCoordinates[0] - 3][whiteKingCoordinates[1]] + "\r\n"
+                            + "*************DEBUG*****************"
+            );
 
+            //Is there a rook?
+            //North
+            for (int i = 1; i < 10; i++) {
+                if (chessBoardNew[whiteKingCoordinates[0] - i][whiteKingCoordinates[1]].equals("BR")) {
+                    System.out.println("A rook has the white king by the throat. Check!");
+                    whiteKingChecked = true;
+                }
+                if (chessBoardNew[whiteKingCoordinates[0] - i][whiteKingCoordinates[1]].equals("__")) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            //East
+            for (int i = 1; i < 10; i++) {
+                    if (chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1] + i].equals("BR")) {
+                        System.out.println("A rook has the white king by the throat. Check!");
+                        whiteKingChecked = true;
+                    }
+                    if (chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1] +i].equals("__")) {
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+            //South
+            for (int i = 1; i < 10; i++) {
+                if (chessBoardNew[whiteKingCoordinates[0] +i][whiteKingCoordinates[1]].equals("BR")) {
+                    System.out.println("A rook has the white king by the throat. Check!");
+                    whiteKingChecked = true;
+                }
+                if (chessBoardNew[whiteKingCoordinates[0] +i][whiteKingCoordinates[1]].equals("__")) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            //West
+            for (int i = 1; i < 10; i++) {
+                if (chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1] - i].equals("BR")) {
+                    System.out.println("A rook has the white king by the throat. Check!");
+                    whiteKingChecked = true;
+                }
+                if (chessBoardNew[whiteKingCoordinates[0]][whiteKingCoordinates[1] - i].equals("__")) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
 
-return whiteKingChecked;
+            return whiteKingChecked;
     }
 
     public static boolean checkIsBlackChecked() {
@@ -220,7 +275,6 @@ return whiteKingChecked;
                 //  System.out.println("\r\n");
             }
         }
-
 
 }
 
@@ -311,12 +365,11 @@ class Player extends Chessboard {
             if(moveCoordinates[0] < 0) {
                 absolute = moveCoordinates[0] * -1;
             }
-
             if(moveCoordinates[1] > 0){
                 absolute = moveCoordinates[1];
             }
             if(moveCoordinates[1] < 0){
-                absolute = moveCoordinates[1]+-1;
+                absolute = moveCoordinates[1]*-1;
             }
 
             //parse if there is a piece and what color
@@ -350,7 +403,7 @@ class Player extends Chessboard {
                     }
 
                     //captures diagonally
-                    if((chessBoardNew[originCoordinates[0] -1][originCoordinates[1] -1]).charAt(0) == 'B'
+                    if((Chessboard.chessBoardNew[originCoordinates[0] -1][originCoordinates[1] -1]).charAt(0) == 'B'
                             && (moveCoordinates[0] == -1 && moveCoordinates[1] == -1))
                     {
                         moveIsLegal = true;
@@ -528,27 +581,29 @@ class Player extends Chessboard {
                 case "BB", "WB" -> {
                     moveIsLegal = false;
                     //moves diagonally
-                    if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
-                        moveIsLegal = true;
-                        break;
-                    }
-                    if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
-                        moveIsLegal = true;
+                    if(moveCoordinates[0] == moveCoordinates[1] || moveCoordinates[0] == moveCoordinates[1]*-1 ) {
+                        if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                            moveIsLegal = true;
+                            break;
+                        }
+                        if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                            moveIsLegal = true;
+                            break;
+                        }
+                        if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] > -8 && moveCoordinates[1] < 0)) {
+                            moveIsLegal = true;
+                            break;
+                        }
+                        if ((moveCoordinates[0] > -8 && moveCoordinates[0] < 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
+                            moveIsLegal = true;
+                        }
                     }
                     //cannot skip other pieces
                 }
                 case "BQ", "WQ" -> {
                     moveIsLegal = false;
                     //moves diagonally
-                    if(moveCoordinates[0] == moveCoordinates[1]) {
+                    if(moveCoordinates[0] == moveCoordinates[1] || moveCoordinates[0] == moveCoordinates[1]*-1 ) {
                         if ((moveCoordinates[0] < 8 && moveCoordinates[0] > 0) && (moveCoordinates[1] < 8 && moveCoordinates[1] > 0)) {
                             moveIsLegal = true;
                             break;
@@ -780,12 +835,6 @@ class Player extends Chessboard {
             if(piece.equals("BN") || piece.equals("WN")){
                 pathIsClear = true;
             }
-
-            System.out.println(
-                            "*************DEBUG*****************" + "\r\n"
-                            + "Is the path clear? " + pathIsClear + "\r\n"
-                            + "*************DEBUG*****************"
-            );
 
 
 
